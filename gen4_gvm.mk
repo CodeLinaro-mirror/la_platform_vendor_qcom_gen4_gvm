@@ -13,7 +13,9 @@ $(TARGET_OUT_INTERMEDIATES)/KERNEL_OBJ/usr:
 
 # Change Kernel modules install path
 KERNEL_MODULES_INSTALL := dlkm
+ifeq ($(KERNEL_MODULES_OUT),)
 KERNEL_MODULES_OUT := out/target/product/$(PRODUCT_DEVICE)/$(KERNEL_MODULES_INSTALL)/lib/modules
+endif
 # TARGET_KERNEL_VERSION := 5.15
 # TARGET_HAS_GENERIC_KERNEL_HEADERS := true
 # Set the system.prop files to that of the inherited product plus the new product. Alternatively, the system.prop file can be copied over
