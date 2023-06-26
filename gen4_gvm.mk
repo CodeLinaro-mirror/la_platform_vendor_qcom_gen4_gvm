@@ -136,10 +136,6 @@ PRODUCT_DEVICE := gen4_gvm
 PRODUCT_BRAND := qti
 PRODUCT_MODEL := gen4_gvm for arm64
 
-TARGET_OUT_INTERMEDIATES := out/target/product/$(PRODUCT_NAME)/obj
-$(TARGET_OUT_INTERMEDIATES)/KERNEL_OBJ/usr:
-	mkdir -p $(TARGET_OUT_INTERMEDIATES)/KERNEL_OBJ/usr
-
 ###########
 #QMAA flags starts
 ###########
