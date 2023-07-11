@@ -4,17 +4,16 @@ TARGET_BOARD_TYPE := auto
 TARGET_BOARD_SUFFIX := _gvm
 ENABLE_AIDL_VHAL := true
 # U-BRINGUP disable display
-TARGET_DISABLE_DISPLAY := true
+TARGET_DISABLE_DISPLAY := false
 TARGET_IS_HEADLESS := true
 TARGET_DISABLE_CODEC2 := true
 TARGET_DISABLE_VPP_FILTER := true
-TARGET_DISABLE_HSI2S_DLKM := true
-TARGET_DISABLE_DISPLAY_DLKM := true
-TARGET_DISABLE_AUDIO_DLKM := true
+TARGET_DISABLE_HSI2S_DLKM := false
+TARGET_DISABLE_DISPLAY_DLKM := false
 TARGET_DISABLE_AIS_DLKM := true
 TARGET_DISABLE_LIBVIRTDIAG := true
 
-AUDIO_USE_STUB_HAL := true
+AUDIO_USE_STUB_HAL := false
 # Skip VINTF checks for kernel configs since we do not have kernel source
 PRODUCT_OTA_ENFORCE_VINTF_KERNEL_REQUIREMENTS := false
 
@@ -57,6 +56,9 @@ TARGET_USES_AOSP_FOR_WLAN := true
 BOARD_HAS_QCOM_WLAN := false
 ENABLE_CAR_POWER_MANAGER := true
 VPP_TARGET_USES_SERVICE := NO
+ENABLE_AUDIO_LEGACY_TECHPACK := false
+TARGET_USES_QCOM_MM_AUDIO := true
+TARGET_GVMGH_SPECIFIC := false
 
 # U-BRINGUP disable userspace reboot
 #Enable Userspace Restart
@@ -124,10 +126,10 @@ PRODUCT_PROPERTY_OVERRIDES  += \
 
 PRODUCT_PROPERTY_OVERRIDES += ro.control_privapp_permissions=enforce
 
-PRODUCT_PROPERTY_OVERRIDES += \
-    ro.config.headless=1 \
-    config.disable_noncore=true \
-    config.disable_systemui=true \
+# PRODUCT_PROPERTY_OVERRIDES += \
+#     ro.config.headless=1 \
+#     config.disable_noncore=true \
+#     config.disable_systemui=true \
 
 $(call inherit-product, packages/services/Car/car_product/build/car.mk)
 
@@ -153,7 +155,7 @@ TARGET_USES_QMAA_RECOMMENDED_BOOT_CONFIG := true
 
 TARGET_USES_QMAA_OVERRIDE_ANDROID_CORE := true
 TARGET_USES_QMAA_OVERRIDE_ANDROID_RECOVERY := true
-TARGET_USES_QMAA_OVERRIDE_AUDIO   := true
+TARGET_USES_QMAA_OVERRIDE_AUDIO   := false
 TARGET_USES_QMAA_OVERRIDE_BIOMETRICS := true
 TARGET_USES_QMAA_OVERRIDE_BLUETOOTH   := true
 TARGET_USES_QMAA_OVERRIDE_CAMERA  := true
