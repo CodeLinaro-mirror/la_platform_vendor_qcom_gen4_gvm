@@ -64,6 +64,7 @@ TARGET_GVMGH_SPECIFIC := false
 #Enable Userspace Restart
 #$(call inherit-product, $(SRC_TARGET_DIR)/product/userspace_reboot.mk)
 
+TARGET_HAS_VIRTIO_FASTRPC := true
 
 # Dynamic-partition enabled by default
 BOARD_DYNAMIC_PARTITION_ENABLE := true
