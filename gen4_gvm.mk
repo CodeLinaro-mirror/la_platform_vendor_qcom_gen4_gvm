@@ -53,7 +53,7 @@ TARGET_FWK_SUPPORTS_AV_VALUEADDS := true
 #TARGET_FWK_SUPPORTS_FULL_VALUEADDS := false
 TARGET_USES_AOSP_FOR_WLAN := true
 # U-BRINGUP disable wlan
-BOARD_HAS_QCOM_WLAN := false
+BOARD_HAS_QCOM_WLAN := true
 ENABLE_CAR_POWER_MANAGER := true
 VPP_TARGET_USES_SERVICE := NO
 ENABLE_AUDIO_LEGACY_TECHPACK := false
@@ -423,7 +423,7 @@ ENABLE_VENDOR_RIL_SERVICE := true
 #----------------------------------------------------------------------
 ifeq ($(strip $(BOARD_HAS_QCOM_WLAN)),true)
 # Multiple chips
-TARGET_WLAN_CHIP := qca6390
+TARGET_WLAN_CHIP := qca6390 qca6490
 include device/qcom/wlan/msmnile_au/wlan.mk
 endif
 
