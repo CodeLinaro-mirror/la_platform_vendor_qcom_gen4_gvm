@@ -45,8 +45,8 @@ on early-init && property:ro.boot.audio=""
 
 # AudioReach
 on early-init && property:ro.boot.audio=audioreach
-     setprop ro.hardware.audio.primary "msmnile.ar"
-     setprop ro.hardware.sound_trigger.primary "msmnile.ar"
+     setprop ro.hardware.audio.primary "gen4.ar"
+     setprop ro.hardware.sound_trigger.primary "gen4.ar"
 
 # AudioReach
 on early-init && property:ro.boot.audio=audioreach_gen3
@@ -72,14 +72,14 @@ on property:vendor.gdb.dump=true
     write /proc/sys/kernel/core_pattern "/data/core/core.%e.%p.%h.%t"
 
 on fs
-    mount_all /vendor/etc/fstab.qcom --early
+    mount_all --early
     chown root system /mnt/vendor/persist
     chmod 0771 /mnt/vendor/persist
     restorecon_recursive /mnt/vendor/persist
     mkdir /mnt/vendor/persist/data 0700 system system
 
 on late-fs
-    mount_all /vendor/etc/fstab.qcom --late
+    mount_all --late
 
 on post-fs
     # set RLIMIT_MEMLOCK to 64MB
