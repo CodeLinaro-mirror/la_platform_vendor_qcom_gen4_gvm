@@ -61,6 +61,9 @@ ENABLE_AUDIO_LEGACY_TECHPACK := false
 TARGET_USES_QCOM_MM_AUDIO := true
 TARGET_GVMGH_SPECIFIC := false
 
+# RRO configuration
+TARGET_USES_RRO := true
+
 # U-BRINGUP disable userspace reboot
 #Enable Userspace Restart
 #$(call inherit-product, $(SRC_TARGET_DIR)/product/userspace_reboot.mk)
