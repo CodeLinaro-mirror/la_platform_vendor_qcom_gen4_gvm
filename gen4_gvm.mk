@@ -434,11 +434,8 @@ ifeq ($(TARGET_USES_GAS),true)
 PRODUCT_COPY_FILES += device/qcom/gen4_gvm/gen4_gvm_features.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/gen4_gvm_features.xml
 endif
 
-# Camera configuration file. Shared by passthrough/binderized camera HAL
-PRODUCT_PACKAGES += camera.device@3.2-impl
-PRODUCT_PACKAGES += camera.device@1.0-impl
-PRODUCT_PACKAGES += android.hardware.camera.provider@2.4-impl
-PRODUCT_PACKAGES += android.hardware.camera.provider@2.4-service
+#Camera
+$(call inherit-product-if-exists, vendor/qcom/proprietary/qcx/product.mk)
 
 # enable audio hidl hal 5.0
 PRODUCT_PACKAGES += \
