@@ -421,8 +421,6 @@ ifeq ($(TARGET_USES_GAS),true)
   PRODUCT_COPY_FILES += device/qcom/gen4_gvm/gen4_gvm_features.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/gen4_gvm_features.xml
 endif
 
-#Camera
-$(call inherit-product-if-exists, vendor/qcom/proprietary/qcx/product.mk)
 
 # enable audio hidl hal 5.0
 PRODUCT_PACKAGES += \
