@@ -431,6 +431,11 @@ PRODUCT_PACKAGES += \
     android.hardware.audio.effect@5.0 \
     android.hardware.audio.effect@5.0-impl
 
+#enable gptp
+PRODUCT_PACKAGES += \
+            libgptp \
+            libgptp_test
+
 #Boot control HAL test app
 PRODUCT_PACKAGES_DEBUG += bootctl
 
