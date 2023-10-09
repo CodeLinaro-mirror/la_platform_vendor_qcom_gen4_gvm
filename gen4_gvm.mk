@@ -3,6 +3,7 @@ TARGET_BOOTLOADER_BOARD_NAME := gen4
 TARGET_BOARD_TYPE := auto
 TARGET_BOARD_SUFFIX := _gvm
 ENABLE_AIDL_VHAL := true
+ENABLE_AIDL_SENSOR := true
 # U-BRINGUP disable display
 TARGET_DISABLE_DISPLAY := false
 TARGET_IS_HEADLESS := false
@@ -16,20 +17,20 @@ TARGET_DISABLE_LIBVIRTDIAG := true
 AUDIO_USE_STUB_HAL := false
 # Skip VINTF checks for kernel configs since we do not have kernel source
 PRODUCT_OTA_ENFORCE_VINTF_KERNEL_REQUIREMENTS := false
+PRODUCT_MANUFACTURER := Qualcomm
 
 PRODUCT_VENDOR_PROPERTIES += \
     ro.soc.manufacturer=$(PRODUCT_MANUFACTURER) \
-    ro.soc.model=$(PRODUCT_DEVICE)
 
 ALLOW_MISSING_DEPENDENCIES := true
-  ENABLE_AB ?= true
-  # Enable virtual-ab by default
-  ifeq ($(ENABLE_AB), true)
-    ENABLE_VIRTUAL_AB ?= false
-  endif
-  ifeq ($(ENABLE_VIRTUAL_AB), true)
-    $(call inherit-product, $(SRC_TARGET_DIR)/product/virtual_ab_ota.mk)
-  endif
+ENABLE_AB ?= true
+# Disable virtual-ab by default
+ifeq ($(ENABLE_AB), true)
+  ENABLE_VIRTUAL_AB ?= false
+endif
+ifeq ($(ENABLE_VIRTUAL_AB), true)
+  $(call inherit-product, $(SRC_TARGET_DIR)/product/virtual_ab_ota.mk)
+endif
 # Enable AVB 2.0
 BOARD_AVB_ENABLE := true
 BOARD_USES_QCNE := false
@@ -42,8 +43,6 @@ TARGET_USES_QTIC := false
 TARGET_USES_QTIC_EXTENSION := false
 ENABLE_HYP := true
 TARGET_CONSOLE_ENABLED ?= true
-# FR77687: Migrate AIDL interface using -ndk_platform.so to -ndk.so
-NEED_AIDL_NDK_PLATFORM_BACKEND := true
 TARGET_NO_QTI_WFD := true
 BOARD_HAVE_QCOM_FM := false
 BOARD_VENDOR_QCOM_LOC_PDK_FEATURE_SET := false
@@ -53,22 +52,25 @@ TARGET_FWK_SUPPORTS_AV_VALUEADDS := true
 #TARGET_FWK_SUPPORTS_FULL_VALUEADDS := false
 TARGET_USES_AOSP_FOR_WLAN := true
 # U-BRINGUP disable wlan
-BOARD_HAS_QCOM_WLAN := false
+BOARD_HAS_QCOM_WLAN := true
 ENABLE_CAR_POWER_MANAGER := true
 VPP_TARGET_USES_SERVICE := NO
 ENABLE_AUDIO_LEGACY_TECHPACK := false
 TARGET_USES_QCOM_MM_AUDIO := true
 TARGET_GVMGH_SPECIFIC := false
 
+# RRO configuration
+TARGET_USES_RRO := true
+
 # U-BRINGUP disable userspace reboot
 #Enable Userspace Restart
 #$(call inherit-product, $(SRC_TARGET_DIR)/product/userspace_reboot.mk)
 
+TARGET_HAS_VIRTIO_FASTRPC := true
 
 # Dynamic-partition enabled by default
 BOARD_DYNAMIC_PARTITION_ENABLE := true
 ifeq ($(strip $(BOARD_DYNAMIC_PARTITION_ENABLE)),true)
-
   PRODUCT_USE_DYNAMIC_PARTITIONS := true
   BOARD_BUILD_SUPER_IMAGE_BY_DEFAULT := true
   PRODUCT_BUILD_SUPER_PARTITION := true
@@ -76,18 +78,16 @@ ifeq ($(strip $(BOARD_DYNAMIC_PARTITION_ENABLE)),true)
   # Enable System_ext
   PRODUCT_BUILD_SYSTEM_EXT_IMAGE := true
   PRODUCT_PACKAGES += fastbootd
-  
-# Mismatch in the uses-library tags between build system and the manifest leads
-# to soong APK manifest_check tool errors. Enable the flag to fix this.
-RELAX_USES_LIBRARY_CHECK := true
 
-ifeq ($(ENABLE_AB), true)
-PRODUCT_COPY_FILES += $(LOCAL_PATH)/fstab_AB_dynamic_partition_variant.qti:$(TARGET_COPY_OUT_VENDOR_RAMDISK)/first_stage_ramdisk/fstab.qcom
-PRODUCT_COPY_FILES += $(LOCAL_PATH)/fstab_AB_dynamic_partition_variant.gen4.qti:$(TARGET_COPY_OUT_VENDOR_RAMDISK)/first_stage_ramdisk/fstab.gen4.qcom
-else
-PRODUCT_COPY_FILES += $(LOCAL_PATH)/fstab_non_AB_dynamic_partition_variant.qti:$(TARGET_COPY_OUT_VENDOR_RAMDISK)/first_stage_ramdisk/fstab.qcom
-PRODUCT_COPY_FILES += $(LOCAL_PATH)/fstab_non_AB_dynamic_partition_variant.gen4.qti:$(TARGET_COPY_OUT_VENDOR_RAMDISK)/first_stage_ramdisk/fstab.gen4.qcom
-endif
+  # Mismatch in the uses-library tags between build system and the manifest leads
+  # to soong APK manifest_check tool errors. Enable the flag to fix this.
+  RELAX_USES_LIBRARY_CHECK := true
+  
+  ifeq ($(ENABLE_AB), true)
+    PRODUCT_COPY_FILES += $(LOCAL_PATH)/fstab_AB_dynamic_partition_variant.gen4.qti:$(TARGET_COPY_OUT_VENDOR_RAMDISK)/first_stage_ramdisk/fstab.gen4.qcom
+  else
+    PRODUCT_COPY_FILES += $(LOCAL_PATH)/fstab_non_AB_dynamic_partition_variant.gen4.qti:$(TARGET_COPY_OUT_VENDOR_RAMDISK)/first_stage_ramdisk/fstab.gen4.qcom
+  endif
 endif
 #PRODUCT_BUILD_SYSTEM_IMAGE := true
 PRODUCT_BUILD_SYSTEM_OTHER_IMAGE := false
@@ -111,10 +111,13 @@ BOARD_AVB_SYSTEM_DLKM_ADD_HASHTREE_FOOTER_ARGS += --hash_algorithm sha256
 BOARD_AVB_VENDOR_DLKM_ADD_HASHTREE_FOOTER_ARGS += --hash_algorithm sha256
 
 ifneq ("$(wildcard device/qcom/$(TARGET_BOARD_PLATFORM)-kernel/vendor_dlkm/system_dlkm.modules.blocklist)", "")
-PRODUCT_COPY_FILES += device/qcom/$(TARGET_BOARD_PLATFORM)-kernel/vendor_dlkm/system_dlkm.modules.blocklist:$(TARGET_COPY_OUT_VENDOR_DLKM)/lib/modules/system_dlkm.modules.blocklist
+  PRODUCT_COPY_FILES += device/qcom/$(TARGET_BOARD_PLATFORM)-kernel/vendor_dlkm/system_dlkm.modules.blocklist:$(TARGET_COPY_OUT_VENDOR_DLKM)/lib/modules/system_dlkm.modules.blocklist
 endif
 
 TARGET_DEFINES_DALVIK_HEAP := true
+# Disable 32bit App support.
+# This value should be set before including device/qcom/common/common64.mk
+DEVICE_SUPPORTS_64_BIT_APPS_ONLY := true
 $(call inherit-product, device/qcom/common/common64.mk)
 #Inherit all except heap growth limit from phone-xhdpi-2048-dalvik-heap.mk
 PRODUCT_PROPERTY_OVERRIDES  += \
@@ -167,7 +170,7 @@ TARGET_USES_QMAA_OVERRIDE_DATA := false
 TARGET_USES_QMAA_OVERRIDE_DIAG := false
 TARGET_USES_QMAA_OVERRIDE_DISPLAY := false
 TARGET_USES_QMAA_OVERRIDE_DPM  := false
-TARGET_USES_QMAA_OVERRIDE_DRM  := false
+TARGET_USES_QMAA_OVERRIDE_DRM  := true
 TARGET_USES_QMAA_OVERRIDE_EID := false
 TARGET_USES_QMAA_OVERRIDE_FASTCV  := true
 TARGET_USES_QMAA_OVERRIDE_FASTRPC := false
@@ -185,7 +188,7 @@ TARGET_USES_QMAA_OVERRIDE_PERF := true
 TARGET_USES_QMAA_OVERRIDE_REMOTE_EFS := false
 TARGET_USES_QMAA_OVERRIDE_RPMB := true
 TARGET_USES_QMAA_OVERRIDE_SCVE  := false
-TARGET_USES_QMAA_OVERRIDE_SECUREMSM_TESTS := false
+TARGET_USES_QMAA_OVERRIDE_SECUREMSM_TESTS := true
 TARGET_USES_QMAA_OVERRIDE_SENSORS := true
 TARGET_USES_QMAA_OVERRIDE_SMCINVOKE := false
 TARGET_USES_QMAA_OVERRIDE_SOTER := false
@@ -214,26 +217,15 @@ endif
 # Sensor conf files
 PRODUCT_COPY_FILES += \
     device/qcom/gen4_gvm/sensors/hals.conf:$(TARGET_COPY_OUT_VENDOR)/etc/sensors/hals.conf \
-    frameworks/native/data/etc/android.hardware.sensor.accelerometer.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.sensor.accelerometer.xml \
-    frameworks/native/data/etc/android.hardware.sensor.compass.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.sensor.compass.xml \
-    frameworks/native/data/etc/android.hardware.sensor.gyroscope.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.sensor.gyroscope.xml \
-    frameworks/native/data/etc/android.hardware.sensor.light.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.sensor.light.xml \
-    frameworks/native/data/etc/android.hardware.sensor.proximity.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.sensor.proximity.xml \
-    frameworks/native/data/etc/android.hardware.sensor.barometer.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.sensor.barometer.xml \
-    frameworks/native/data/etc/android.hardware.sensor.stepcounter.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.sensor.stepcounter.xml \
-    frameworks/native/data/etc/android.hardware.sensor.stepdetector.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.sensor.stepdetector.xml \
-    frameworks/native/data/etc/android.hardware.sensor.ambient_temperature.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.sensor.ambient_temperature.xml \
-    frameworks/native/data/etc/android.hardware.sensor.relative_humidity.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.sensor.relative_humidity.xml \
-    frameworks/native/data/etc/android.hardware.sensor.hifi_sensors.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.sensor.hifi_sensors.xml
 
 
-PRODUCT_SHIPPING_API_LEVEL := 33
+PRODUCT_SHIPPING_API_LEVEL := 34
 
 #Initial bringup flags
 
 #Default vendor image configuration
 ifeq ($(ENABLE_VENDOR_IMAGE),)
-ENABLE_VENDOR_IMAGE := false
+  ENABLE_VENDOR_IMAGE := false
 endif
 
 TARGET_KERNEL_VERSION := 6.1
@@ -255,12 +247,12 @@ PRODUCT_PACKAGES += libGLES_android
 
 # diag-router
 ifeq ($(strip $(TARGET_BUILD_VARIANT)),user)
-    TARGET_HAS_DIAG_ROUTER := false
+  TARGET_HAS_DIAG_ROUTER := false
 else
-    TARGET_HAS_DIAG_ROUTER := true
+  TARGET_HAS_DIAG_ROUTER := true
 endif
 
-# Memtrack HAL deprecated. Replaced with AIDL for target-level 6.
+# Memtrack HAL deprecated. Replaced with AIDL for target-level >= 6.
 ENABLE_MEMTRACK_AIDL_HAL := true
 
 -include $(QCPATH)/common/config/qtic-config.mk
@@ -301,8 +293,6 @@ endif #TARGET_ENABLE_QC_AV_ENHANCEMENTS
 
 #PRODUCT_COPY_FILES += hardware/qcom/media/conf_files/gen4/system_properties.xml:$(TARGET_COPY_OUT_VENDOR)/etc/system_properties.xml
 
-PRODUCT_PACKAGES += android.hardware.media.omx@1.0-impl
-
 #Audio DLKM
 AUDIO_DLKM := audio_apr.ko
 AUDIO_DLKM += audio_snd_event.ko
@@ -335,10 +325,8 @@ PRODUCT_PACKAGES += fs_config_files
 PRODUCT_PACKAGES += update_engine \
     update_engine_client \
     update_verifier \
-    bootctrl.gen4 \
-    android.hardware.boot@1.2-service \
-    android.hardware.boot@1.2-impl-qti \
-    android.hardware.boot@1.2-impl-qti.recovery \
+    android.hardware.boot-service.qti \
+    android.hardware.boot-service.qti.recovery \
     update_engine_sideload
 
 # bootctrl property
@@ -370,12 +358,12 @@ DEVICE_FRAMEWORK_COMPATIBILITY_MATRIX_FILE := vendor/qcom/opensource/core-utils/
 # Enable Scoped Storage related
 $(call inherit-product, $(SRC_TARGET_DIR)/product/emulated_storage.mk)
 
-# Display/Graphics
+# BroadcastRadio
 PRODUCT_PACKAGES += \
-    android.hardware.broadcastradio@1.0-impl
+    android.hardware.broadcastradio-service.default
 
-# MSM IRQ Balancer configuration file
-#PRODUCT_COPY_FILES += device/qcom/gen4/msm_irqbalance.conf:$(TARGET_COPY_OUT_VENDOR)/etc/msm_irqbalance.conf
+PRODUCT_COPY_FILES += \
+    frameworks/native/data/etc/android.hardware.broadcastradio.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.broadcastradio.xml \
 
 # MIDI feature
 PRODUCT_COPY_FILES += \
@@ -393,7 +381,7 @@ PRODUCT_COPY_FILES += \
 
 # Kernel modules install path
 KERNEL_MODULES_INSTALL := dlkm
-KERNEL_MODULES_OUT := out/target/product/gen4_gvm/$(KERNEL_MODULES_INSTALL)/lib/modules
+KERNEL_MODULES_OUT := out/target/product/$(TARGET_PRODUCT)/$(KERNEL_MODULES_INSTALL)/lib/modules
 
 #FEATURE_OPENGLES_EXTENSION_PACK support string config file
 PRODUCT_COPY_FILES += \
@@ -419,7 +407,7 @@ ENABLE_VENDOR_RIL_SERVICE := true
 #----------------------------------------------------------------------
 ifeq ($(strip $(BOARD_HAS_QCOM_WLAN)),true)
 # Multiple chips
-TARGET_WLAN_CHIP := qca6390
+TARGET_WLAN_CHIP := qca6390 qca6490
 include device/qcom/wlan/msmnile_au/wlan.mk
 endif
 
@@ -430,14 +418,9 @@ PRODUCT_PROPERTY_OVERRIDES += vendor.usb.diag_mdm.inst.name=diag_mdm2
 
 #Copy supported features list
 ifeq ($(TARGET_USES_GAS),true)
-PRODUCT_COPY_FILES += device/qcom/gen4_gvm/gen4_gvm_features.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/gen4_gvm_features.xml
+  PRODUCT_COPY_FILES += device/qcom/gen4_gvm/gen4_gvm_features.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/gen4_gvm_features.xml
 endif
 
-# Camera configuration file. Shared by passthrough/binderized camera HAL
-PRODUCT_PACKAGES += camera.device@3.2-impl
-PRODUCT_PACKAGES += camera.device@1.0-impl
-PRODUCT_PACKAGES += android.hardware.camera.provider@2.4-impl
-PRODUCT_PACKAGES += android.hardware.camera.provider@2.4-service
 
 # enable audio hidl hal 5.0
 PRODUCT_PACKAGES += \
@@ -458,7 +441,7 @@ PRODUCT_PACKAGES += \
 
 PRODUCT_PACKAGES += android.hardware.health-service.example \
                     android.hardware.dumpstate-service.example \
-                    android.hardware.thermal@2.0-service.mock
+                    android.hardware.thermal-service.example
 
 PRODUCT_PACKAGES += android.hardware.gnss@2.0-service
 PRODUCT_PACKAGES += qcar-gsi.avbpubkey
