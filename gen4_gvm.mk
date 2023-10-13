@@ -84,9 +84,9 @@ ifeq ($(strip $(BOARD_DYNAMIC_PARTITION_ENABLE)),true)
   RELAX_USES_LIBRARY_CHECK := true
   
   ifeq ($(ENABLE_AB), true)
-    PRODUCT_COPY_FILES += $(LOCAL_PATH)/fstab_AB_dynamic_partition_variant.gen4.qti:$(TARGET_COPY_OUT_VENDOR_RAMDISK)/first_stage_ramdisk/fstab.gen4.qcom
+    PRODUCT_COPY_FILES += device/qcom/gen4_gvm/fstab_AB_dynamic_partition_variant.gen4.qti:$(TARGET_COPY_OUT_VENDOR_RAMDISK)/first_stage_ramdisk/fstab.gen4.qcom
   else
-    PRODUCT_COPY_FILES += $(LOCAL_PATH)/fstab_non_AB_dynamic_partition_variant.gen4.qti:$(TARGET_COPY_OUT_VENDOR_RAMDISK)/first_stage_ramdisk/fstab.gen4.qcom
+    PRODUCT_COPY_FILES += device/qcom/gen4_gvm/fstab_non_AB_dynamic_partition_variant.gen4.qti:$(TARGET_COPY_OUT_VENDOR_RAMDISK)/first_stage_ramdisk/fstab.gen4.qcom
   endif
 endif
 #PRODUCT_BUILD_SYSTEM_IMAGE := true
