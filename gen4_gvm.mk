@@ -202,7 +202,7 @@ TARGET_USES_QMAA_OVERRIDE_VPP := false
 TARGET_USES_QMAA_OVERRIDE_WFD     := true
 TARGET_USES_QMAA_OVERRIDE_WLAN    := true
 
-TARGET_ENABLE_QSEECOM := false
+TARGET_ENABLE_QSEECOM := true
 #Full QMAA HAL List
 QMAA_HAL_LIST := audio video camera display sensors gps
 
