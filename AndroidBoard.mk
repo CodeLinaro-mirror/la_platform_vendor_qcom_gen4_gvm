@@ -68,6 +68,7 @@ LOCAL_SRC_FILES    := $(LOCAL_MODULE)
 LOCAL_MODULE_PATH  := $(TARGET_OUT_KEYLAYOUT)
 include $(BUILD_PREBUILT)
 
+ifneq ($(TARGET_BOARD_DERIVATIVE_SUFFIX),_gy)
 ifeq ($(strip $(BOARD_DYNAMIC_PARTITION_ENABLE)),true)
   include $(CLEAR_VARS)
   LOCAL_MODULE       := fstab.qcom
@@ -91,6 +92,7 @@ else
   endif
   include $(BUILD_PREBUILT)
 endif ##BOARD_DYNAMIC_PARTITION_ENABLE
+endif
 
 include device/qcom/vendor-common/MergeConfig.mk
 

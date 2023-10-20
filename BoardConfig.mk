@@ -268,6 +268,10 @@ SOONG_CONFIG_NAMESPACES += ufsbsg
 SOONG_CONFIG_ufsbsg += ufsframework
 SOONG_CONFIG_ufsbsg_ufsframework := bsg
 
+SOONG_CONFIG_NAMESPACES += android_hardware_audio
+SOONG_CONFIG_android_hardware_audio += run_64bit
+SOONG_CONFIG_android_hardware_audio_run_64bit := true
+
 #----------------------------------------------------------------------
 # wlan specific
 #----------------------------------------------------------------------
@@ -277,7 +281,7 @@ endif
 
 #Flag to enable System SDK Requirements.
 #All vendor APK will be compiled against system_current API set.
-BOARD_SYSTEMSDK_VERSIONS:=33
+BOARD_SYSTEMSDK_VERSIONS:= $(PRODUCT_SHIPPING_API_LEVEL)
 
 #Enable VNDK Compliance
 BOARD_VNDK_VERSION:=current

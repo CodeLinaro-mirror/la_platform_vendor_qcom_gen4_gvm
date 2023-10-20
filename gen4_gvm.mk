@@ -3,6 +3,7 @@ TARGET_BOOTLOADER_BOARD_NAME := gen4
 TARGET_BOARD_TYPE := auto
 TARGET_BOARD_SUFFIX := _gvm
 ENABLE_AIDL_VHAL := true
+ENABLE_AIDL_SENSOR := true
 # U-BRINGUP disable display
 TARGET_DISABLE_DISPLAY := false
 TARGET_IS_HEADLESS := false
@@ -53,7 +54,7 @@ TARGET_FWK_SUPPORTS_AV_VALUEADDS := true
 #TARGET_FWK_SUPPORTS_FULL_VALUEADDS := false
 TARGET_USES_AOSP_FOR_WLAN := true
 # U-BRINGUP disable wlan
-BOARD_HAS_QCOM_WLAN := false
+BOARD_HAS_QCOM_WLAN := true
 ENABLE_CAR_POWER_MANAGER := true
 VPP_TARGET_USES_SERVICE := NO
 ENABLE_AUDIO_LEGACY_TECHPACK := false
@@ -116,6 +117,9 @@ PRODUCT_COPY_FILES += device/qcom/$(TARGET_BOARD_PLATFORM)-kernel/vendor_dlkm/sy
 endif
 
 TARGET_DEFINES_DALVIK_HEAP := true
+# Disable 32bit App support.
+# This value should be set before including device/qcom/common/common64.mk
+DEVICE_SUPPORTS_64_BIT_APPS_ONLY := true
 $(call inherit-product, device/qcom/common/common64.mk)
 #Inherit all except heap growth limit from phone-xhdpi-2048-dalvik-heap.mk
 PRODUCT_PROPERTY_OVERRIDES  += \
@@ -228,7 +232,7 @@ PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.hardware.sensor.hifi_sensors.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.sensor.hifi_sensors.xml
 
 
-PRODUCT_SHIPPING_API_LEVEL := 33
+PRODUCT_SHIPPING_API_LEVEL := 34
 
 #Initial bringup flags
 
@@ -336,10 +340,8 @@ PRODUCT_PACKAGES += fs_config_files
 PRODUCT_PACKAGES += update_engine \
     update_engine_client \
     update_verifier \
-    bootctrl.gen4 \
-    android.hardware.boot@1.2-service \
-    android.hardware.boot@1.2-impl-qti \
-    android.hardware.boot@1.2-impl-qti.recovery \
+    android.hardware.boot-service.qti \
+    android.hardware.boot-service.qti.recovery \
     update_engine_sideload
 
 # bootctrl property
@@ -394,7 +396,7 @@ PRODUCT_COPY_FILES += \
 
 # Kernel modules install path
 KERNEL_MODULES_INSTALL := dlkm
-KERNEL_MODULES_OUT := out/target/product/gen4_gvm/$(KERNEL_MODULES_INSTALL)/lib/modules
+KERNEL_MODULES_OUT := out/target/product/$(TARGET_PRODUCT)/$(KERNEL_MODULES_INSTALL)/lib/modules
 
 #FEATURE_OPENGLES_EXTENSION_PACK support string config file
 PRODUCT_COPY_FILES += \
@@ -420,7 +422,7 @@ ENABLE_VENDOR_RIL_SERVICE := true
 #----------------------------------------------------------------------
 ifeq ($(strip $(BOARD_HAS_QCOM_WLAN)),true)
 # Multiple chips
-TARGET_WLAN_CHIP := qca6390
+TARGET_WLAN_CHIP := qca6390 qca6490
 include device/qcom/wlan/msmnile_au/wlan.mk
 endif
 
