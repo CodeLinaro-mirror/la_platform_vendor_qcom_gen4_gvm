@@ -436,6 +436,10 @@ PRODUCT_PACKAGES += \
             libgptp \
             libgptp_test
 
+#eavb fe lib and app
+PRODUCT_PACKAGES += libeavbfe \
+            eavbfe_test
+
 #Boot control HAL test app
 PRODUCT_PACKAGES_DEBUG += bootctl
 
