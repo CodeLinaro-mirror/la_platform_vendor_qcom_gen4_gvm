@@ -22,14 +22,26 @@ PRODUCT_MANUFACTURER := Qualcomm
 PRODUCT_VENDOR_PROPERTIES += \
     ro.soc.manufacturer=$(PRODUCT_MANUFACTURER) \
 
+SHIPPING_API_LEVEL := 34
+PRODUCT_SHIPPING_API_LEVEL := $(SHIPPING_API_LEVEL)
+
 ALLOW_MISSING_DEPENDENCIES := true
 ENABLE_AB ?= true
 # Disable virtual-ab by default
 ifeq ($(ENABLE_AB), true)
-  ENABLE_VIRTUAL_AB ?= false
+  ENABLE_VIRTUAL_AB ?= true
 endif
 ifeq ($(ENABLE_VIRTUAL_AB), true)
-  $(call inherit-product, $(SRC_TARGET_DIR)/product/virtual_ab_ota.mk)
+  ifeq (true,$(call math_gt_or_eq,$(SHIPPING_API_LEVEL),34))
+  # For OTA updates with shipping api level 34 and above.
+    $(call inherit-product, $(SRC_TARGET_DIR)/product/virtual_ab_ota/vabc_features.mk)
+    PRODUCT_VENDOR_PROPERTIES += ro.virtual_ab.compression.threads=true
+  else
+    # For OTA updates with shipping api level 33 and below.
+    $(call inherit-product, $(SRC_TARGET_DIR)/product/generic_ramdisk.mk)
+    $(call inherit-product, $(SRC_TARGET_DIR)/product/virtual_ab_ota/android_t_baseline.mk)
+  endif
+  PRODUCT_VIRTUAL_AB_COMPRESSION_METHOD := gz
 endif
 # Enable AVB 2.0
 BOARD_AVB_ENABLE := true
@@ -223,7 +235,6 @@ PRODUCT_COPY_FILES += \
     device/qcom/gen4_gvm/sensors/hals.conf:$(TARGET_COPY_OUT_VENDOR)/etc/sensors/hals.conf \
 
 
-PRODUCT_SHIPPING_API_LEVEL := 34
 
 #Initial bringup flags
 
