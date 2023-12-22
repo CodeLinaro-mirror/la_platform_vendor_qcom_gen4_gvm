@@ -462,7 +462,6 @@ PRODUCT_PACKAGES += android.hardware.health-service.example \
                     android.hardware.dumpstate-service.example \
                     android.hardware.thermal-service.example
 
-PRODUCT_PACKAGES += android.hardware.gnss-service.example
 PRODUCT_PACKAGES += qcar-gsi.avbpubkey
 
 #add vndservicemanager
