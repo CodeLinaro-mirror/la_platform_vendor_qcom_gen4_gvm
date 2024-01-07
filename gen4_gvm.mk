@@ -50,7 +50,7 @@ BOARD_AVB_ENABLE := true
 BOARD_USES_QCNE := false
 TARGET_BOARD_AUTO := true
 TARGET_USES_AOSP := true
-#TARGET_USES_GAS := true
+TARGET_USES_GAS := true
 TARGET_USES_QCOM_BSP := false
 TARGET_NO_TELEPHONY := true
 TARGET_USES_QTIC := false
@@ -195,7 +195,7 @@ TARGET_USES_QMAA_OVERRIDE_FM  := true
 TARGET_USES_QMAA_OVERRIDE_FTM := false
 TARGET_USES_QMAA_OVERRIDE_GFX := true
 TARGET_USES_QMAA_OVERRIDE_GPS := false
-TARGET_USES_QMAA_OVERRIDE_GP := false
+TARGET_USES_QMAA_OVERRIDE_GP := true
 TARGET_USES_QMAA_OVERRIDE_GPT := false
 TARGET_USES_QMAA_OVERRIDE_KERNEL_TESTS_INTERNAL := false
 TARGET_USES_QMAA_OVERRIDE_KMGK := true
@@ -432,12 +432,6 @@ TARGET_MOUNT_POINTS_SYMLINKS := false
 
 PRODUCT_PROPERTY_OVERRIDES += vendor.usb.diag_mdm.inst.name=diag_mdm2
 
-#Copy supported features list
-ifeq ($(TARGET_USES_GAS),true)
-  PRODUCT_COPY_FILES += device/qcom/gen4_gvm/gen4_gvm_features.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/gen4_gvm_features.xml
-endif
-
-
 # enable audio hidl hal 5.0
 PRODUCT_PACKAGES += \
     android.hardware.audio@5.0 \
@@ -468,7 +462,6 @@ PRODUCT_PACKAGES += android.hardware.health-service.example \
                     android.hardware.dumpstate-service.example \
                     android.hardware.thermal-service.example
 
-PRODUCT_PACKAGES += android.hardware.gnss@2.0-service
 PRODUCT_PACKAGES += qcar-gsi.avbpubkey
 
 #add vndservicemanager
