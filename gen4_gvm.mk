@@ -22,14 +22,26 @@ PRODUCT_MANUFACTURER := Qualcomm
 PRODUCT_VENDOR_PROPERTIES += \
     ro.soc.manufacturer=$(PRODUCT_MANUFACTURER) \
 
+SHIPPING_API_LEVEL := 34
+PRODUCT_SHIPPING_API_LEVEL := $(SHIPPING_API_LEVEL)
+
 ALLOW_MISSING_DEPENDENCIES := true
 ENABLE_AB ?= true
 # Disable virtual-ab by default
 ifeq ($(ENABLE_AB), true)
-  ENABLE_VIRTUAL_AB ?= false
+  ENABLE_VIRTUAL_AB ?= true
 endif
 ifeq ($(ENABLE_VIRTUAL_AB), true)
-  $(call inherit-product, $(SRC_TARGET_DIR)/product/virtual_ab_ota.mk)
+  ifeq (true,$(call math_gt_or_eq,$(SHIPPING_API_LEVEL),34))
+  # For OTA updates with shipping api level 34 and above.
+    $(call inherit-product, $(SRC_TARGET_DIR)/product/virtual_ab_ota/vabc_features.mk)
+    PRODUCT_VENDOR_PROPERTIES += ro.virtual_ab.compression.threads=true
+  else
+    # For OTA updates with shipping api level 33 and below.
+    $(call inherit-product, $(SRC_TARGET_DIR)/product/generic_ramdisk.mk)
+    $(call inherit-product, $(SRC_TARGET_DIR)/product/virtual_ab_ota/android_t_baseline.mk)
+  endif
+  PRODUCT_VIRTUAL_AB_COMPRESSION_METHOD := gz
 endif
 # Enable AVB 2.0
 BOARD_AVB_ENABLE := true
@@ -51,8 +63,12 @@ TARGET_ENABLE_QC_AV_ENHANCEMENTS := false
 TARGET_FWK_SUPPORTS_AV_VALUEADDS := true
 #TARGET_FWK_SUPPORTS_FULL_VALUEADDS := false
 TARGET_USES_AOSP_FOR_WLAN := true
-# U-BRINGUP disable wlan
+
+# Disable WLAN for Gunyah hypervisor based GVM .
+ifneq ($(strip $(TARGET_BOARD_DERIVATIVE_SUFFIX)),_gy)
 BOARD_HAS_QCOM_WLAN := true
+endif
+
 ENABLE_CAR_POWER_MANAGER := true
 VPP_TARGET_USES_SERVICE := NO
 ENABLE_AUDIO_LEGACY_TECHPACK := false
@@ -62,9 +78,8 @@ TARGET_GVMGH_SPECIFIC := false
 # RRO configuration
 TARGET_USES_RRO := true
 
-# U-BRINGUP disable userspace reboot
 #Enable Userspace Restart
-#$(call inherit-product, $(SRC_TARGET_DIR)/product/userspace_reboot.mk)
+$(call inherit-product, $(SRC_TARGET_DIR)/product/userspace_reboot.mk)
 
 TARGET_HAS_VIRTIO_FASTRPC := true
 
@@ -84,9 +99,9 @@ ifeq ($(strip $(BOARD_DYNAMIC_PARTITION_ENABLE)),true)
   RELAX_USES_LIBRARY_CHECK := true
   
   ifeq ($(ENABLE_AB), true)
-    PRODUCT_COPY_FILES += $(LOCAL_PATH)/fstab_AB_dynamic_partition_variant.gen4.qti:$(TARGET_COPY_OUT_VENDOR_RAMDISK)/first_stage_ramdisk/fstab.gen4.qcom
+    PRODUCT_COPY_FILES += device/qcom/gen4_gvm/fstab_AB_dynamic_partition_variant.gen4.qti:$(TARGET_COPY_OUT_VENDOR_RAMDISK)/first_stage_ramdisk/fstab.gen4.qcom
   else
-    PRODUCT_COPY_FILES += $(LOCAL_PATH)/fstab_non_AB_dynamic_partition_variant.gen4.qti:$(TARGET_COPY_OUT_VENDOR_RAMDISK)/first_stage_ramdisk/fstab.gen4.qcom
+    PRODUCT_COPY_FILES += device/qcom/gen4_gvm/fstab_non_AB_dynamic_partition_variant.gen4.qti:$(TARGET_COPY_OUT_VENDOR_RAMDISK)/first_stage_ramdisk/fstab.gen4.qcom
   endif
 endif
 #PRODUCT_BUILD_SYSTEM_IMAGE := true
@@ -202,7 +217,7 @@ TARGET_USES_QMAA_OVERRIDE_VPP := false
 TARGET_USES_QMAA_OVERRIDE_WFD     := true
 TARGET_USES_QMAA_OVERRIDE_WLAN    := true
 
-TARGET_ENABLE_QSEECOM := false
+TARGET_ENABLE_QSEECOM := true
 #Full QMAA HAL List
 QMAA_HAL_LIST := audio video camera display sensors gps
 
@@ -219,7 +234,6 @@ PRODUCT_COPY_FILES += \
     device/qcom/gen4_gvm/sensors/hals.conf:$(TARGET_COPY_OUT_VENDOR)/etc/sensors/hals.conf \
 
 
-PRODUCT_SHIPPING_API_LEVEL := 34
 
 #Initial bringup flags
 
@@ -435,6 +449,10 @@ PRODUCT_PACKAGES += \
 PRODUCT_PACKAGES += \
             libgptp \
             libgptp_test
+
+#eavb fe lib and app
+PRODUCT_PACKAGES += libeavbfe \
+            eavbfe_test
 
 #Boot control HAL test app
 PRODUCT_PACKAGES_DEBUG += bootctl
