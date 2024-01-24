@@ -21,22 +21,36 @@ PRODUCT_MANUFACTURER := Qualcomm
 
 PRODUCT_VENDOR_PROPERTIES += \
     ro.soc.manufacturer=$(PRODUCT_MANUFACTURER) \
+# Enable support for APEX updates
+$(call inherit-product, $(SRC_TARGET_DIR)/product/updatable_apex.mk)
+
+SHIPPING_API_LEVEL := 34
+PRODUCT_SHIPPING_API_LEVEL := $(SHIPPING_API_LEVEL)
 
 ALLOW_MISSING_DEPENDENCIES := true
 ENABLE_AB ?= true
 # Disable virtual-ab by default
 ifeq ($(ENABLE_AB), true)
-  ENABLE_VIRTUAL_AB ?= false
+  ENABLE_VIRTUAL_AB ?= true
 endif
 ifeq ($(ENABLE_VIRTUAL_AB), true)
-  $(call inherit-product, $(SRC_TARGET_DIR)/product/virtual_ab_ota.mk)
+  ifeq (true,$(call math_gt_or_eq,$(SHIPPING_API_LEVEL),34))
+  # For OTA updates with shipping api level 34 and above.
+    $(call inherit-product, $(SRC_TARGET_DIR)/product/virtual_ab_ota/vabc_features.mk)
+    PRODUCT_VENDOR_PROPERTIES += ro.virtual_ab.compression.threads=true
+  else
+    # For OTA updates with shipping api level 33 and below.
+    $(call inherit-product, $(SRC_TARGET_DIR)/product/generic_ramdisk.mk)
+    $(call inherit-product, $(SRC_TARGET_DIR)/product/virtual_ab_ota/android_t_baseline.mk)
+  endif
+  PRODUCT_VIRTUAL_AB_COMPRESSION_METHOD := gz
 endif
 # Enable AVB 2.0
 BOARD_AVB_ENABLE := true
 BOARD_USES_QCNE := false
 TARGET_BOARD_AUTO := true
 TARGET_USES_AOSP := true
-#TARGET_USES_GAS := true
+TARGET_USES_GAS := true
 TARGET_USES_QCOM_BSP := false
 TARGET_NO_TELEPHONY := true
 TARGET_USES_QTIC := false
@@ -51,8 +65,12 @@ TARGET_ENABLE_QC_AV_ENHANCEMENTS := false
 TARGET_FWK_SUPPORTS_AV_VALUEADDS := true
 #TARGET_FWK_SUPPORTS_FULL_VALUEADDS := false
 TARGET_USES_AOSP_FOR_WLAN := true
-# U-BRINGUP disable wlan
+
+# Disable WLAN for Gunyah hypervisor based GVM .
+ifneq ($(strip $(TARGET_BOARD_DERIVATIVE_SUFFIX)),_gy)
 BOARD_HAS_QCOM_WLAN := true
+endif
+
 ENABLE_CAR_POWER_MANAGER := true
 VPP_TARGET_USES_SERVICE := NO
 ENABLE_AUDIO_LEGACY_TECHPACK := false
@@ -62,9 +80,8 @@ TARGET_GVMGH_SPECIFIC := false
 # RRO configuration
 TARGET_USES_RRO := true
 
-# U-BRINGUP disable userspace reboot
 #Enable Userspace Restart
-#$(call inherit-product, $(SRC_TARGET_DIR)/product/userspace_reboot.mk)
+$(call inherit-product, $(SRC_TARGET_DIR)/product/userspace_reboot.mk)
 
 TARGET_HAS_VIRTIO_FASTRPC := true
 
@@ -178,7 +195,7 @@ TARGET_USES_QMAA_OVERRIDE_FM  := true
 TARGET_USES_QMAA_OVERRIDE_FTM := false
 TARGET_USES_QMAA_OVERRIDE_GFX := true
 TARGET_USES_QMAA_OVERRIDE_GPS := false
-TARGET_USES_QMAA_OVERRIDE_GP := false
+TARGET_USES_QMAA_OVERRIDE_GP := true
 TARGET_USES_QMAA_OVERRIDE_GPT := false
 TARGET_USES_QMAA_OVERRIDE_KERNEL_TESTS_INTERNAL := false
 TARGET_USES_QMAA_OVERRIDE_KMGK := true
@@ -219,7 +236,6 @@ PRODUCT_COPY_FILES += \
     device/qcom/gen4_gvm/sensors/hals.conf:$(TARGET_COPY_OUT_VENDOR)/etc/sensors/hals.conf \
 
 
-PRODUCT_SHIPPING_API_LEVEL := 34
 
 #Initial bringup flags
 
@@ -407,7 +423,7 @@ ENABLE_VENDOR_RIL_SERVICE := true
 #----------------------------------------------------------------------
 ifeq ($(strip $(BOARD_HAS_QCOM_WLAN)),true)
 # Multiple chips
-TARGET_WLAN_CHIP := qca6390 qca6490
+TARGET_WLAN_CHIP := qca6390 qca6490 kiwi_v2 qcn7605
 include device/qcom/wlan/msmnile_au/wlan.mk
 endif
 
@@ -415,12 +431,6 @@ TARGET_MOUNT_POINTS_SYMLINKS := false
 
 
 PRODUCT_PROPERTY_OVERRIDES += vendor.usb.diag_mdm.inst.name=diag_mdm2
-
-#Copy supported features list
-ifeq ($(TARGET_USES_GAS),true)
-  PRODUCT_COPY_FILES += device/qcom/gen4_gvm/gen4_gvm_features.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/gen4_gvm_features.xml
-endif
-
 
 # enable audio hidl hal 5.0
 PRODUCT_PACKAGES += \
@@ -452,7 +462,6 @@ PRODUCT_PACKAGES += android.hardware.health-service.example \
                     android.hardware.dumpstate-service.example \
                     android.hardware.thermal-service.example
 
-PRODUCT_PACKAGES += android.hardware.gnss@2.0-service
 PRODUCT_PACKAGES += qcar-gsi.avbpubkey
 
 #add vndservicemanager
@@ -652,6 +661,9 @@ PRODUCT_VENDOR_PROPERTIES += vendor.display.builtin_mirroring=true
 PRODUCT_VENDOR_PROPERTIES += vendor.display.builtin_baseid_and_size=5,3 \
                             vendor.display.pluggable_baseid_and_size=1,4 \
                             vendor.display.virtual_baseid_and_size=8,1 \
+
+# Gralloc use dmabuf
+PRODUCT_VENDOR_PROPERTIES += vendor.gralloc.use_dma_buf_heaps=1
 
 # Enable CPMS for LPM
 PRODUCT_VENDOR_PROPERTIES += persist.vendor.car.lpm=true
