@@ -433,6 +433,7 @@ TARGET_MOUNT_POINTS_SYMLINKS := false
 
 
 PRODUCT_PROPERTY_OVERRIDES += vendor.usb.diag_mdm.inst.name=diag_mdm2
+PRODUCT_PROPERTY_OVERRIDES += debug.sf.nobootanimation=1
 
 # enable audio hidl hal 5.0
 PRODUCT_PACKAGES += \
