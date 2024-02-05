@@ -85,6 +85,8 @@ $(call inherit-product, $(SRC_TARGET_DIR)/product/userspace_reboot.mk)
 
 TARGET_HAS_VIRTIO_FASTRPC := true
 
+TARGET_HAS_HYBRID_FASTRPC := true
+
 # Dynamic-partition enabled by default
 BOARD_DYNAMIC_PARTITION_ENABLE := true
 ifeq ($(strip $(BOARD_DYNAMIC_PARTITION_ENABLE)),true)
