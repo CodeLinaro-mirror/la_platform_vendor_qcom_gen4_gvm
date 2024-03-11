@@ -73,6 +73,11 @@ else
     TARGET_COPY_OUT_PRODUCT := product
     BOARD_PRODUCTIMAGE_FILE_SYSTEM_TYPE := ext4
  endif
+ ifeq ($(TARGET_BOARD_DERIVATIVE_SUFFIX), _microdroid)
+    BOARD_USES_PRODUCTIMAGE := true
+    TARGET_COPY_OUT_PRODUCT := product
+    BOARD_PRODUCTIMAGE_FILE_SYSTEM_TYPE := ext4
+ endif
 
   # System DLKM dynamic Partition support
   BOARD_USES_SYSTEM_DLKMIMAGE := true
