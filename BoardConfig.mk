@@ -68,6 +68,12 @@ else
   TARGET_COPY_OUT_SYSTEM_EXT := system_ext
   BOARD_SYSTEM_EXTIMAGE_FILE_SYSTEM_TYPE := ext4
 
+ ifeq ($(TARGET_SINGLE_TREE), true)
+    BOARD_USES_PRODUCTIMAGE := true
+    TARGET_COPY_OUT_PRODUCT := product
+    BOARD_PRODUCTIMAGE_FILE_SYSTEM_TYPE := ext4
+ endif
+
   # System DLKM dynamic Partition support
   BOARD_USES_SYSTEM_DLKMIMAGE := true
   TARGET_COPY_OUT_SYSTEM_DLKM := system_dlkm
@@ -89,7 +95,11 @@ else
   endif
   BOARD_SUPER_PARTITION_GROUPS := qti_dynamic_partitions
   BOARD_QTI_DYNAMIC_PARTITIONS_SIZE := 6438256640 #(6GB - 4MB)
-  BOARD_QTI_DYNAMIC_PARTITIONS_PARTITION_LIST := vendor vendor_dlkm system_dlkm
+  ifeq ($(TARGET_SINGLE_TREE), true)
+    BOARD_QTI_DYNAMIC_PARTITIONS_PARTITION_LIST := vendor vendor_dlkm system_dlkm system system_ext product
+  else
+    BOARD_QTI_DYNAMIC_PARTITIONS_PARTITION_LIST := vendor vendor_dlkm system_dlkm
+  endif
   BOARD_EXT4_SHARE_DUP_BLOCKS := true
 endif
 
@@ -107,7 +117,11 @@ endif
 AB_OTA_UPDATER := true
 ifeq ($(ENABLE_AB), true)
  # Full A/B partition update set
-  AB_OTA_PARTITIONS ?= vendor vbmeta vendor_dlkm system_dlkm
+  ifeq ($(TARGET_SINGLE_TREE), true)
+    AB_OTA_PARTITIONS ?= vendor vbmeta vendor_dlkm system_dlkm system system_ext product
+  else
+    AB_OTA_PARTITIONS ?= vendor vbmeta vendor_dlkm system_dlkm
+  endif
 else
   AB_OTA_PARTITIONS ?= boot system
   ifneq ($(BOARD_USES_RECOVERY_AS_BOOT), true)
@@ -127,7 +141,6 @@ endif
 
 TARGET_RECOVERY_FSTAB := device/qcom/gen4_gvm/fstab.gen4.qti
 BOARD_USES_METADATA_PARTITION := true
-
 TARGET_HW_DISK_ENCRYPTION := false
 TARGET_HW_DISK_ENCRYPTION_PERF := false
 
@@ -171,7 +184,7 @@ TARGET_USES_ION := true
 TARGET_USES_NEW_ION_API :=true
 TARGET_USES_QCOM_BSP := false
 
-BOARD_BOOTCONFIG := androidboot.hardware=qcom androidboot.selinux=enforcing androidboot.memcg=1 androidboot.recover_usb=1 androidboot.dtbo_idx=1
+BOARD_BOOTCONFIG := androidboot.hardware=qcom androidboot.selinux=enforcing androidboot.memcg=1 androidboot.recover_usb=1
 
 BOARD_KERNEL_CMDLINE := debug user_debug=31 loglevel=9 print-fatal-signals=1  init=/init swiotlb=4096  kpti=0 pcie_ports=compat firmware_class.path=/vendor/firmware_mnt/image loop.max_part=7
 
