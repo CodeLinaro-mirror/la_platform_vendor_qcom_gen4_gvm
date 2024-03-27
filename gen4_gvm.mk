@@ -127,6 +127,8 @@ TARGET_HAS_VIRTIO_FASTRPC := true
 
 TARGET_HAS_HYBRID_FASTRPC := true
 
+TARGET_ENABLE_FASTRPC_TEST := true
+
 # Dynamic-partition enabled by default
 BOARD_DYNAMIC_PARTITION_ENABLE := true
 ifeq ($(strip $(BOARD_DYNAMIC_PARTITION_ENABLE)),true)
@@ -823,6 +825,13 @@ ifeq ($(TARGET_SINGLE_TREE), true)
   endif
 
   PRODUCT_PACKAGES += vendor.qti.qesdsys
+endif
+
+ifeq ($(TARGET_ENABLE_FASTRPC_TEST), true)
+ # Add Fastrpc test apps
+ PRODUCT_PACKAGES_DEBUG += calculator
+ PRODUCT_PACKAGES_DEBUG += libcalculator
+ PRODUCT_PACKAGES_DEBUG += libcalculator_skel
 endif
 
 ###################################################################################
