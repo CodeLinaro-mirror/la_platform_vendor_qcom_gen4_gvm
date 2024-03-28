@@ -220,6 +220,11 @@ service vendor.tlocd /vendor/bin/tloc_daemon
     user system
     group drmrpc gps net_raw
 
+#Apple CP
+on boot
+    chown root system /dev/i2c-1
+    chmod 0660 /dev/i2c-1
+
 #Start EMAC ethernet driver
 on boot
     insmod /vendor/lib/modules/emac_dwc_eqos.ko
