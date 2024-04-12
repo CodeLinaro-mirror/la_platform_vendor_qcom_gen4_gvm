@@ -133,25 +133,25 @@ TARGET_ENABLE_FASTRPC_TEST := true
 BOARD_DYNAMIC_PARTITION_ENABLE := true
 ifeq ($(strip $(BOARD_DYNAMIC_PARTITION_ENABLE)),true)
   PRODUCT_USE_DYNAMIC_PARTITIONS := true
-  BOARD_BUILD_SUPER_IMAGE_BY_DEFAULT := true
-  PRODUCT_BUILD_SUPER_PARTITION := true
+  BOARD_BUILD_SUPER_IMAGE_BY_DEFAULT := false
+  PRODUCT_BUILD_SUPER_PARTITION := false
   PRODUCT_BUILD_RAMDISK_IMAGE := true
-  # Enable System_ext
-  PRODUCT_BUILD_SYSTEM_EXT_IMAGE := true
   PRODUCT_PACKAGES += fastbootd
 
   # Mismatch in the uses-library tags between build system and the manifest leads
   # to soong APK manifest_check tool errors. Enable the flag to fix this.
   RELAX_USES_LIBRARY_CHECK := true
-  
+
   ifeq ($(ENABLE_AB), true)
     PRODUCT_COPY_FILES += device/qcom/gen4_gvm/fstab_AB_dynamic_partition_variant.gen4.qti:$(TARGET_COPY_OUT_VENDOR_RAMDISK)/first_stage_ramdisk/fstab.gen4.qcom
   else
     PRODUCT_COPY_FILES += device/qcom/gen4_gvm/fstab_non_AB_dynamic_partition_variant.gen4.qti:$(TARGET_COPY_OUT_VENDOR_RAMDISK)/first_stage_ramdisk/fstab.gen4.qcom
   endif
 endif
-#PRODUCT_BUILD_SYSTEM_IMAGE := true
+
+PRODUCT_BUILD_SYSTEM_IMAGE := false
 PRODUCT_BUILD_SYSTEM_OTHER_IMAGE := false
+PRODUCT_BUILD_SYSTEM_EXT_IMAGE := false
 #PRODUCT_BUILD_VENDOR_IMAGE := true
 PRODUCT_BUILD_PRODUCT_IMAGE := false
 PRODUCT_BUILD_PRODUCT_SERVICES_IMAGE := false
@@ -162,19 +162,23 @@ PRODUCT_BUILD_USERDATA_IMAGE := true
 PRODUCT_BUILD_VENDOR_BOOT_IMAGE := true
 PRODUCT_BUILD_VENDOR_DLKM_IMAGE := true
 PRODUCT_BUILD_SYSTEM_DLKM_IMAGE := true
-ifneq ($(TARGET_BOARD_DERIVATIVE_SUFFIX), _microdroid)
-  PRODUCT_BUILD_SYSTEM_IMAGE := false
-  PRODUCT_BUILD_PRODUCT_IMAGE := false
-  TARGET_SKIP_OTA_PACKAGE := true
-else
+TARGET_SKIP_OTA_PACKAGE := true
+
+ifeq ($(TARGET_BOARD_DERIVATIVE_SUFFIX), _microdroid)
+  # Enable system image generation for microdroid
   PRODUCT_BUILD_SYSTEM_IMAGE := true
   PRODUCT_BUILD_PRODUCT_IMAGE := true
+  BOARD_BUILD_SUPER_IMAGE_BY_DEFAULT := true
+  PRODUCT_BUILD_SUPER_PARTITION := true
   BOARD_AVB_PRODUCT_ADD_HASHTREE_FOOTER_ARGS += --hash_algorithm sha256
-  TARGET_SKIP_OTA_PACKAGE := true
 endif
+
 ifeq ($(TARGET_SINGLE_TREE), true)
   PRODUCT_BUILD_SYSTEM_IMAGE := true
+  PRODUCT_BUILD_SYSTEM_EXT_IMAGE := true
   PRODUCT_BUILD_PRODUCT_IMAGE := true
+  BOARD_BUILD_SUPER_IMAGE_BY_DEFAULT := true
+  PRODUCT_BUILD_SUPER_PARTITION := true
   TARGET_SKIP_OTA_PACKAGE := false
 endif
 
