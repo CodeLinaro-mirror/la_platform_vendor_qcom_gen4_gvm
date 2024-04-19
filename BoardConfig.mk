@@ -123,11 +123,17 @@ AB_OTA_UPDATER := true
 ifeq ($(ENABLE_AB), true)
  # Full A/B partition update set
   ifeq ($(TARGET_SINGLE_TREE), true)
-    AB_OTA_PARTITIONS ?= vendor vbmeta vendor_dlkm system_dlkm system system_ext product boot init_boot vendor_boot
-  else  ifeq ($(strip $(TARGET_BOARD_DERIVATIVE_SUFFIX)),_gy)
-    AB_OTA_PARTITIONS ?= vendor vbmeta vendor_dlkm system_dlkm
+    ifeq ($(TARGET_USES_GY), true)
+      AB_OTA_PARTITIONS ?= vendor vbmeta vendor_dlkm system_dlkm system system_ext product
+    else
+      AB_OTA_PARTITIONS ?= vendor vbmeta vendor_dlkm system_dlkm system system_ext product boot init_boot vendor_boot
+    endif
   else
-    AB_OTA_PARTITIONS ?= vendor vbmeta vendor_dlkm system_dlkm boot init_boot vendor_boot
+    ifeq ($(TARGET_USES_GY), true)
+      AB_OTA_PARTITIONS ?= vendor vbmeta vendor_dlkm system_dlkm
+    else
+      AB_OTA_PARTITIONS ?= vendor vbmeta vendor_dlkm system_dlkm boot init_boot vendor_boot
+    endif
   endif
 else
   AB_OTA_PARTITIONS ?= boot system
