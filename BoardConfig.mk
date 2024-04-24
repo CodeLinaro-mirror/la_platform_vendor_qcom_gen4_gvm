@@ -102,6 +102,8 @@ else
   BOARD_QTI_DYNAMIC_PARTITIONS_SIZE := 6438256640 #(6GB - 4MB)
   ifeq ($(TARGET_SINGLE_TREE), true)
     BOARD_QTI_DYNAMIC_PARTITIONS_PARTITION_LIST := vendor vendor_dlkm system_dlkm system system_ext product
+  else ifeq ($(TARGET_BOARD_DERIVATIVE_SUFFIX), _microdroid)
+    BOARD_QTI_DYNAMIC_PARTITIONS_PARTITION_LIST := vendor vendor_dlkm system_dlkm system system_ext product
   else
     BOARD_QTI_DYNAMIC_PARTITIONS_PARTITION_LIST := vendor vendor_dlkm system_dlkm
   endif
@@ -123,6 +125,8 @@ AB_OTA_UPDATER := true
 ifeq ($(ENABLE_AB), true)
  # Full A/B partition update set
   ifeq ($(TARGET_SINGLE_TREE), true)
+    AB_OTA_PARTITIONS ?= vendor vbmeta vendor_dlkm system_dlkm system system_ext product boot init_boot vendor_boot
+  else ifeq ($(TARGET_BOARD_DERIVATIVE_SUFFIX), _microdroid)
     AB_OTA_PARTITIONS ?= vendor vbmeta vendor_dlkm system_dlkm system system_ext product boot init_boot vendor_boot
   else  ifeq ($(strip $(TARGET_BOARD_DERIVATIVE_SUFFIX)),_gy)
     AB_OTA_PARTITIONS ?= vendor vbmeta vendor_dlkm system_dlkm
