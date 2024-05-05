@@ -226,6 +226,8 @@ PRODUCT_DEVICE := gen4_gvm
 PRODUCT_BRAND := qti
 PRODUCT_MODEL := gen4_gvm for arm64
 
+PRODUCT_SOONG_NAMESPACES += hardware/qcom/wlan/qcwcn
+
 ###########
 #QMAA flags starts
 ###########
