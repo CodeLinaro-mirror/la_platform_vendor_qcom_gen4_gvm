@@ -127,29 +127,31 @@ TARGET_HAS_VIRTIO_FASTRPC := true
 
 TARGET_HAS_HYBRID_FASTRPC := true
 
+TARGET_ENABLE_FASTRPC_TEST := true
+
 # Dynamic-partition enabled by default
 BOARD_DYNAMIC_PARTITION_ENABLE := true
 ifeq ($(strip $(BOARD_DYNAMIC_PARTITION_ENABLE)),true)
   PRODUCT_USE_DYNAMIC_PARTITIONS := true
-  BOARD_BUILD_SUPER_IMAGE_BY_DEFAULT := true
-  PRODUCT_BUILD_SUPER_PARTITION := true
+  BOARD_BUILD_SUPER_IMAGE_BY_DEFAULT := false
+  PRODUCT_BUILD_SUPER_PARTITION := false
   PRODUCT_BUILD_RAMDISK_IMAGE := true
-  # Enable System_ext
-  PRODUCT_BUILD_SYSTEM_EXT_IMAGE := true
   PRODUCT_PACKAGES += fastbootd
 
   # Mismatch in the uses-library tags between build system and the manifest leads
   # to soong APK manifest_check tool errors. Enable the flag to fix this.
   RELAX_USES_LIBRARY_CHECK := true
-  
+
   ifeq ($(ENABLE_AB), true)
     PRODUCT_COPY_FILES += device/qcom/gen4_gvm/fstab_AB_dynamic_partition_variant.gen4.qti:$(TARGET_COPY_OUT_VENDOR_RAMDISK)/first_stage_ramdisk/fstab.gen4.qcom
   else
     PRODUCT_COPY_FILES += device/qcom/gen4_gvm/fstab_non_AB_dynamic_partition_variant.gen4.qti:$(TARGET_COPY_OUT_VENDOR_RAMDISK)/first_stage_ramdisk/fstab.gen4.qcom
   endif
 endif
-#PRODUCT_BUILD_SYSTEM_IMAGE := true
+
+PRODUCT_BUILD_SYSTEM_IMAGE := false
 PRODUCT_BUILD_SYSTEM_OTHER_IMAGE := false
+PRODUCT_BUILD_SYSTEM_EXT_IMAGE := false
 #PRODUCT_BUILD_VENDOR_IMAGE := true
 PRODUCT_BUILD_PRODUCT_IMAGE := false
 PRODUCT_BUILD_PRODUCT_SERVICES_IMAGE := false
@@ -160,19 +162,24 @@ PRODUCT_BUILD_USERDATA_IMAGE := true
 PRODUCT_BUILD_VENDOR_BOOT_IMAGE := true
 PRODUCT_BUILD_VENDOR_DLKM_IMAGE := true
 PRODUCT_BUILD_SYSTEM_DLKM_IMAGE := true
-ifneq ($(TARGET_BOARD_DERIVATIVE_SUFFIX), _microdroid)
-  PRODUCT_BUILD_SYSTEM_IMAGE := false
-  PRODUCT_BUILD_PRODUCT_IMAGE := false
-  TARGET_SKIP_OTA_PACKAGE := true
-else
+TARGET_SKIP_OTA_PACKAGE := true
+
+ifeq ($(TARGET_BOARD_DERIVATIVE_SUFFIX), _microdroid)
+  # Enable system image generation for microdroid
   PRODUCT_BUILD_SYSTEM_IMAGE := true
+  PRODUCT_BUILD_SYSTEM_EXT_IMAGE := true
   PRODUCT_BUILD_PRODUCT_IMAGE := true
+  BOARD_BUILD_SUPER_IMAGE_BY_DEFAULT := true
+  PRODUCT_BUILD_SUPER_PARTITION := true
   BOARD_AVB_PRODUCT_ADD_HASHTREE_FOOTER_ARGS += --hash_algorithm sha256
-  TARGET_SKIP_OTA_PACKAGE := true
 endif
+
 ifeq ($(TARGET_SINGLE_TREE), true)
   PRODUCT_BUILD_SYSTEM_IMAGE := true
+  PRODUCT_BUILD_SYSTEM_EXT_IMAGE := true
   PRODUCT_BUILD_PRODUCT_IMAGE := true
+  BOARD_BUILD_SUPER_IMAGE_BY_DEFAULT := true
+  PRODUCT_BUILD_SUPER_PARTITION := true
   TARGET_SKIP_OTA_PACKAGE := false
 endif
 
@@ -219,6 +226,8 @@ PRODUCT_NAME := gen4_gvm
 PRODUCT_DEVICE := gen4_gvm
 PRODUCT_BRAND := qti
 PRODUCT_MODEL := gen4_gvm for arm64
+
+PRODUCT_SOONG_NAMESPACES += hardware/qcom/wlan/qcwcn
 
 ###########
 #QMAA flags starts
@@ -354,20 +363,6 @@ endif
 # Ethernet configuration file
 PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.hardware.ethernet.xml:system/etc/permissions/android.hardware.ethernet.xml
-
-# Video codec configuration files
-ifeq ($(TARGET_ENABLE_QC_AV_ENHANCEMENTS), true)
-PRODUCT_COPY_FILES += device/qcom/gen4/media_profiles.xml:$(TARGET_COPY_OUT_VENDOR)/etc/media_profiles_vendor.xml
-
-PRODUCT_COPY_FILES += device/qcom/gen4/media_codecs.xml:$(TARGET_COPY_OUT_VENDOR)/etc/media_codecs.xml
-PRODUCT_COPY_FILES += device/qcom/gen4/media_codecs_vendor.xml:$(TARGET_COPY_OUT_VENDOR)/etc/media_codecs_vendor.xml
-
-PRODUCT_COPY_FILES += device/qcom/gen4/media_codecs_vendor_audio.xml:$(TARGET_COPY_OUT_VENDOR)/etc/media_codecs_vendor_audio.xml
-
-PRODUCT_COPY_FILES += device/qcom/gen4/media_codecs_performance.xml:$(TARGET_COPY_OUT_VENDOR)/etc/media_codecs_performance.xml
-endif #TARGET_ENABLE_QC_AV_ENHANCEMENTS
-
-#PRODUCT_COPY_FILES += hardware/qcom/media/conf_files/gen4/system_properties.xml:$(TARGET_COPY_OUT_VENDOR)/etc/system_properties.xml
 
 #Audio DLKM
 AUDIO_DLKM := audio_apr.ko
@@ -612,22 +607,6 @@ ifeq ($(TARGET_SINGLE_TREE), true)
 
 endif
 
-PRODUCT_VENDOR_PROPERTIES += rild.libpath=/vendor/lib64/libril-qc-hal-qmi.so \
-                persist.rild.nitz_plmn=
-                persist.rild.nitz_long_ons_0=
-                persist.rild.nitz_long_ons_1=
-                persist.rild.nitz_long_ons_2=
-                persist.rild.nitz_long_ons_3=
-                persist.rild.nitz_short_ons_0=
-                persist.rild.nitz_short_ons_1=
-                persist.rild.nitz_short_ons_2=
-                persist.rild.nitz_short_ons_3=
-                ril.subscription.types=NV,RUIM \
-                DEVICE_PROVISIONED=1 \
-                dalvik.vm.heapsize=36m \
-                dev.pm.dyn_samplingrate=1 \
-                qcom.hw.aac.encoder=true
-
 # Set network mode to (T/L/G/W/1X/EVDO, T/L/G/W/1X/EVDO) for 7+7 mode device on DSDS mode
 PRODUCT_VENDOR_PROPERTIES += ro.telephony.default_network=22,22 \
                             ro.radio.noril=true
@@ -823,6 +802,13 @@ ifeq ($(TARGET_SINGLE_TREE), true)
   endif
 
   PRODUCT_PACKAGES += vendor.qti.qesdsys
+endif
+
+ifeq ($(TARGET_ENABLE_FASTRPC_TEST), true)
+ # Add Fastrpc test apps
+ PRODUCT_PACKAGES_DEBUG += calculator
+ PRODUCT_PACKAGES_DEBUG += libcalculator
+ PRODUCT_PACKAGES_DEBUG += libcalculator_skel
 endif
 
 ###################################################################################
