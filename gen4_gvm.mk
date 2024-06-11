@@ -399,7 +399,7 @@ PRODUCT_COPY_FILES += \
 
 # Kernel modules install path
 KERNEL_MODULES_INSTALL := dlkm
-KERNEL_MODULES_OUT := out/target/product/$(TARGET_PRODUCT)/$(KERNEL_MODULES_INSTALL)/lib/modules
+KERNEL_MODULES_OUT := out/target/product/$(TARGET_BOARD_PLATFORM)$(TARGET_BOARD_SUFFIX)$(TARGET_BOARD_DERIVATIVE_SUFFIX)/$(KERNEL_MODULES_INSTALL)/lib/modules
 
 #FEATURE_OPENGLES_EXTENSION_PACK support string config file
 PRODUCT_COPY_FILES += \
@@ -482,22 +482,6 @@ PRODUCT_ENFORCE_RRO_TARGETS := framework-res
 PRODUCT_PACKAGES += libnbaio
 
 PRODUCT_PRODUCT_PROPERTIES += persist.adb.tcp.port=5555
-
-PRODUCT_VENDOR_PROPERTIES += rild.libpath=/vendor/lib64/libril-qc-hal-qmi.so \
-                persist.rild.nitz_plmn=
-                persist.rild.nitz_long_ons_0=
-                persist.rild.nitz_long_ons_1=
-                persist.rild.nitz_long_ons_2=
-                persist.rild.nitz_long_ons_3=
-                persist.rild.nitz_short_ons_0=
-                persist.rild.nitz_short_ons_1=
-                persist.rild.nitz_short_ons_2=
-                persist.rild.nitz_short_ons_3=
-                ril.subscription.types=NV,RUIM \
-                DEVICE_PROVISIONED=1 \
-                dalvik.vm.heapsize=36m \
-                dev.pm.dyn_samplingrate=1 \
-                qcom.hw.aac.encoder=true
 
 # Set network mode to (T/L/G/W/1X/EVDO, T/L/G/W/1X/EVDO) for 7+7 mode device on DSDS mode
 PRODUCT_VENDOR_PROPERTIES += ro.telephony.default_network=22,22 \
