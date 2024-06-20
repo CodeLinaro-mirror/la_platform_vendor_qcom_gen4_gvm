@@ -266,7 +266,7 @@ TARGET_USES_QMAA_OVERRIDE_DIAG := false
 TARGET_USES_QMAA_OVERRIDE_DISPLAY := true
 TARGET_USES_QMAA_OVERRIDE_DPM  := false
 TARGET_USES_QMAA_OVERRIDE_DRM  := true
-TARGET_USES_QMAA_OVERRIDE_DRM_SMMU  := false
+TARGET_USES_QMAA_OVERRIDE_DRM_SMMU  := true
 TARGET_USES_QMAA_OVERRIDE_EID := false
 TARGET_USES_QMAA_OVERRIDE_FASTCV  := true
 TARGET_USES_QMAA_OVERRIDE_FASTRPC := false
@@ -414,6 +414,10 @@ PRODUCT_PACKAGES += android.hardware.boot@1.0-impl \
                     android.hardware.boot@1.0-service \
                     update_engine_sideload
 endif
+
+# drm_smmu property
+PRODUCT_VENDOR_PROPERTIES += \
+    persist.vendor.drm.smmu=0
 
 # bootctrl property
 PRODUCT_VENDOR_PROPERTIES += \
