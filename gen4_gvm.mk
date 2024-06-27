@@ -70,6 +70,7 @@ ifeq ($(ENABLE_VIRTUAL_AB), true)
   endif
   ifeq (true,$(call math_gt_or_eq,$(SHIPPING_API_LEVEL),34))
     # For OTA updates with shipping api level 34 and above.
+    $(call inherit-product, $(SRC_TARGET_DIR)/product/generic_ramdisk.mk)
     $(call inherit-product, $(SRC_TARGET_DIR)/product/virtual_ab_ota/vabc_features.mk)
     PRODUCT_VENDOR_PROPERTIES += ro.virtual_ab.compression.threads=true
   else
