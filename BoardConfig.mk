@@ -267,6 +267,12 @@ SOONG_CONFIG_NAMESPACES += android_hardware_audio
 SOONG_CONFIG_android_hardware_audio += run_64bit
 SOONG_CONFIG_android_hardware_audio_run_64bit := true
 
+#namespace definition for qtiwifi
+#differentiate auto and non-auto target
+SOONG_CONFIG_NAMESPACES += qtiwifi
+SOONG_CONFIG_qtiwifi += automobile
+SOONG_CONFIG_qtiwifi_automobile := true
+
 #----------------------------------------------------------------------
 # wlan specific
 #----------------------------------------------------------------------
