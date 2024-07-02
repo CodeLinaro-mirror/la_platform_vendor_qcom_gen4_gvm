@@ -19,7 +19,11 @@ ENABLE_C2C_SUPPORT := true
 PRODUCT_VENDOR_PROPERTIES += \
       persist.vendor.c2c.enable=false
 
-AUDIO_USE_STUB_HAL := false
+ifneq ($(TARGET_USES_AUDIOLITE), true)
+  AUDIO_USE_STUB_HAL := false
+else
+  AUDIO_USE_STUB_HAL := true
+endif
 # Skip VINTF checks for kernel configs since we do not have kernel source
 PRODUCT_OTA_ENFORCE_VINTF_KERNEL_REQUIREMENTS := false
 PRODUCT_MANUFACTURER := Qualcomm
@@ -120,7 +124,12 @@ endif
 ENABLE_CAR_POWER_MANAGER := true
 VPP_TARGET_USES_SERVICE := NO
 ENABLE_AUDIO_LEGACY_TECHPACK := false
-TARGET_USES_QCOM_MM_AUDIO := true
+
+ifneq ($(AUDIO_USE_STUB_HAL), true)
+  TARGET_USES_QCOM_MM_AUDIO := true
+else
+  TARGET_USES_QCOM_MM_AUDIO := false
+endif
 TARGET_GVMGH_SPECIFIC := false
 
 # RRO configuration
@@ -380,6 +389,7 @@ PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.hardware.ethernet.xml:system/etc/permissions/android.hardware.ethernet.xml
 
 #Audio DLKM
+ifneq ($(TARGET_USES_AUDIOLITE), true)
 AUDIO_DLKM := audio_apr.ko
 AUDIO_DLKM += audio_snd_event.ko
 AUDIO_DLKM += audio_q6_notifier.ko
@@ -390,6 +400,7 @@ AUDIO_DLKM += audio_hdmi.ko
 AUDIO_DLKM += audio_stub.ko
 AUDIO_DLKM += audio_native.ko
 AUDIO_DLKM += audio_machine_gen4.ko
+endif
 PRODUCT_PACKAGES += $(AUDIO_DLKM)
 
 # U-BRINGUP disable BT dlkm
