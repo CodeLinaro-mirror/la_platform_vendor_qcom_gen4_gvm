@@ -126,7 +126,6 @@ endif
 AB_OTA_UPDATER := true
 ifeq ($(ENABLE_AB), true)
  # Full A/B partition update set
-  ifneq ($(TARGET_USES_GY), true)
     ifeq ($(TARGET_SINGLE_TREE), true)
       AB_OTA_PARTITIONS ?= vendor vbmeta vendor_dlkm system_dlkm system system_ext product boot init_boot vendor_boot
     else ifeq ($(TARGET_BOARD_DERIVATIVE_SUFFIX), _microdroid)
@@ -134,12 +133,6 @@ ifeq ($(ENABLE_AB), true)
     else
       AB_OTA_PARTITIONS ?= vendor vbmeta vendor_dlkm system_dlkm boot init_boot vendor_boot
     endif
-  else
-      AB_OTA_PARTITIONS ?= vendor vbmeta vendor_dlkm system_dlkm
-     ifeq ($(TARGET_SINGLE_TREE), true)
-      AB_OTA_PARTITIONS ?= vendor vbmeta vendor_dlkm system_dlkm system system_ext product
-     endif
-  endif #TARGET_USES_GY
 else
   AB_OTA_PARTITIONS ?= boot system
   ifneq ($(BOARD_USES_RECOVERY_AS_BOOT), true)
