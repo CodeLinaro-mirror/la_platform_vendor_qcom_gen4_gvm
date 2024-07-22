@@ -26,6 +26,7 @@ TARGET_USES_IOPHAL := true
 TARGET_SCREEN_DENSITY := 160
 
 BUILD_BROKEN_DUP_RULES := true
+BOARD_RAMDISK_USE_LZ4 := true
 
 BOARD_INCLUDE_DTB_IN_BOOTIMG := true
 
@@ -301,6 +302,12 @@ SOONG_CONFIG_ufsbsg_ufsframework := bsg
 SOONG_CONFIG_NAMESPACES += android_hardware_audio
 SOONG_CONFIG_android_hardware_audio += run_64bit
 SOONG_CONFIG_android_hardware_audio_run_64bit := true
+
+#namespace definition for qtiwifi
+#differentiate auto and non-auto target
+SOONG_CONFIG_NAMESPACES += qtiwifi
+SOONG_CONFIG_qtiwifi += automobile
+SOONG_CONFIG_qtiwifi_automobile := true
 
 #----------------------------------------------------------------------
 # wlan specific
