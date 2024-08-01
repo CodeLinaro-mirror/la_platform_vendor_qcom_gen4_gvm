@@ -239,3 +239,39 @@ service fastcv /vendor/bin/fastcv.sh
     disabled
     oneshot
 
+on property:persist.vendor.c2c.enable=false
+   stop c2c_hub_service
+   stop dm_service
+   stop log_manager_service
+   stop mosquitto_service
+
+on property:sys.boot_completed=1 && property:persist.vendor.c2c.enable=true
+   start mosquitto_service
+   start c2c_hub_service
+   start dm_service
+   start log_manager_service
+
+#C2C SERVICES
+service mosquitto_service /vendor/bin/mosquitto -c /vendor/etc/mosquitto.conf
+    class main
+    user system
+    group system
+    disabled
+
+service dm_service /vendor/bin/dm
+    class main
+    user system
+    group system
+    disabled
+
+service c2c_hub_service /vendor/bin/c2c_hub
+    class main
+    user system
+    group system
+    disabled
+
+service log_manager_service /vendor/bin/log_manager
+    class main
+    user system
+    group system
+    disabled
