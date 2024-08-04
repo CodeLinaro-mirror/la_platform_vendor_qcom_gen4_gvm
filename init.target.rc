@@ -116,6 +116,10 @@ on boot
     write /data/vendor/netmgr/recovery/recovery_info ""
     chown radio radio /data/vendor/netmgr/recovery/recovery_info
 
+    #update cpusets for background tasks on gvm
+    write /dev/cpuset/background/cpus 4-7
+    write /dev/cpuset/system-background/cpus 4-7
+
 # Add a cpuset for the camera daemon
 # We want all cores for camera
     mkdir /dev/cpuset/camera-daemon
@@ -228,6 +232,13 @@ on boot
 on property:sys.boot_completed=1
     mkdir /data/vendor/fastcv 0700 media media
     start fastcv
+    start drm_smmu
+
+service drm_smmu /vendor/bin/init.drm.smmu.sh
+    user media
+    group media
+    disabled
+    oneshot
 
 service fastcv /vendor/bin/fastcv.sh
     user media
