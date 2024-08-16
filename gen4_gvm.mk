@@ -19,13 +19,45 @@ AUDIO_USE_STUB_HAL := false
 PRODUCT_OTA_ENFORCE_VINTF_KERNEL_REQUIREMENTS := false
 PRODUCT_MANUFACTURER := Qualcomm
 
+ifeq ($(TARGET_SINGLE_TREE), true)
+  PRODUCT_PRODUCT_VNDK_VERSION := current
+  #TODO(amutyala) to revert once QSSI 15 component created
+  #This change requires to build super image (QSSI15 + V14)
+  ifeq (,$(filter VanillaIceCream V 35, $(PLATFORM_VNDK_VERSION)))
+    PRODUCT_EXTRA_VNDK_VERSIONS := 33
+  else
+    PRODUCT_EXTRA_VNDK_VERSIONS := 33 34
+  endif
+
+  PRODUCT_ENFORCE_PRODUCT_PARTITION_INTERFACE := true
+
+  # Enable debugfs restrictions
+  PRODUCT_SET_DEBUGFS_RESTRICTIONS := true
+
+  PRODUCT_SOONG_NAMESPACES += \
+      frameworks/base/boot \
+      cts/tests/signature/api-check \
+      hardware/google/av \
+      hardware/google/interfaces
+
+  TARGET_USES_NEW_ION := true
+
+  TARGET_USES_AOSP_FOR_AUDIO := false
+
+  # Audio configuration file
+  #-include $(TOPDIR)vendor/qcom/opensource/audio-hal/primary-hal/configs/qssi/qssi.mk
+  #-include $(TOPDIR)vendor/qcom/opensource/commonsys/audio/configs/qssi/qssi.mk
+  AUDIO_FEATURE_ENABLED_SVA_MULTI_STAGE := true
+endif
+
 PRODUCT_VENDOR_PROPERTIES += \
     ro.soc.manufacturer=$(PRODUCT_MANUFACTURER) \
 # Enable support for APEX updates
 $(call inherit-product, $(SRC_TARGET_DIR)/product/updatable_apex.mk)
 
-SHIPPING_API_LEVEL := 34
+SHIPPING_API_LEVEL := 35
 PRODUCT_SHIPPING_API_LEVEL := $(SHIPPING_API_LEVEL)
+BOARD_SHIPPING_API_LEVEL := 202402
 
 ALLOW_MISSING_DEPENDENCIES := true
 ENABLE_AB ?= true
@@ -34,8 +66,12 @@ ifeq ($(ENABLE_AB), true)
   ENABLE_VIRTUAL_AB ?= true
 endif
 ifeq ($(ENABLE_VIRTUAL_AB), true)
+  ifeq ($(TARGET_SINGLE_TREE), true)
+    $(call inherit-product, $(SRC_TARGET_DIR)/product/generic_ramdisk.mk)
+  endif
   ifeq (true,$(call math_gt_or_eq,$(SHIPPING_API_LEVEL),34))
-  # For OTA updates with shipping api level 34 and above.
+    # For OTA updates with shipping api level 34 and above.
+    $(call inherit-product, $(SRC_TARGET_DIR)/product/generic_ramdisk.mk)
     $(call inherit-product, $(SRC_TARGET_DIR)/product/virtual_ab_ota/vabc_features.mk)
     PRODUCT_VENDOR_PROPERTIES += ro.virtual_ab.compression.threads=true
   else
@@ -50,7 +86,10 @@ BOARD_AVB_ENABLE := true
 BOARD_USES_QCNE := false
 TARGET_BOARD_AUTO := true
 TARGET_USES_AOSP := true
-TARGET_USES_GAS := true
+#TODO(amutyala) to revert this once QSSI 15 component created
+ifeq (,$(filter VanillaIceCream V 35, $(PLATFORM_VNDK_VERSION)))
+  TARGET_USES_GAS := true
+endif
 TARGET_USES_QCOM_BSP := false
 TARGET_NO_TELEPHONY := true
 TARGET_USES_QTIC := false
@@ -64,6 +103,9 @@ EXCLUDE_LOCATION_FEATURES := true
 TARGET_ENABLE_QC_AV_ENHANCEMENTS := false
 TARGET_FWK_SUPPORTS_AV_VALUEADDS := true
 #TARGET_FWK_SUPPORTS_FULL_VALUEADDS := false
+ifeq ($(TARGET_SINGLE_TREE), true)
+  TARGET_FWK_SUPPORTS_FULL_VALUEADDS := true
+endif
 TARGET_USES_AOSP_FOR_WLAN := true
 
 # Disable WLAN for Gunyah hypervisor based GVM .
@@ -83,33 +125,43 @@ TARGET_USES_RRO := true
 #Enable Userspace Restart
 $(call inherit-product, $(SRC_TARGET_DIR)/product/userspace_reboot.mk)
 
-TARGET_HAS_VIRTIO_FASTRPC := true
-
-TARGET_HAS_HYBRID_FASTRPC := true
+ifneq ($(TARGET_BOARD_DERIVATIVE_SUFFIX), _microdroid)
+  TARGET_HAS_VIRTIO_FASTRPC := true
+  TARGET_HAS_HYBRID_FASTRPC := true
+  TARGET_ENABLE_FASTRPC_TEST := true
+endif
 
 # Dynamic-partition enabled by default
 BOARD_DYNAMIC_PARTITION_ENABLE := true
 ifeq ($(strip $(BOARD_DYNAMIC_PARTITION_ENABLE)),true)
   PRODUCT_USE_DYNAMIC_PARTITIONS := true
-  BOARD_BUILD_SUPER_IMAGE_BY_DEFAULT := true
-  PRODUCT_BUILD_SUPER_PARTITION := true
+  BOARD_BUILD_SUPER_IMAGE_BY_DEFAULT := false
+  PRODUCT_BUILD_SUPER_PARTITION := false
   PRODUCT_BUILD_RAMDISK_IMAGE := true
-  # Enable System_ext
-  PRODUCT_BUILD_SYSTEM_EXT_IMAGE := true
   PRODUCT_PACKAGES += fastbootd
 
   # Mismatch in the uses-library tags between build system and the manifest leads
   # to soong APK manifest_check tool errors. Enable the flag to fix this.
   RELAX_USES_LIBRARY_CHECK := true
-  
+
   ifeq ($(ENABLE_AB), true)
-    PRODUCT_COPY_FILES += device/qcom/gen4_gvm/fstab_AB_dynamic_partition_variant.gen4.qti:$(TARGET_COPY_OUT_VENDOR_RAMDISK)/first_stage_ramdisk/fstab.gen4.qcom
+    ifeq (true,$(call math_gt_or_eq,$(SHIPPING_API_LEVEL),34))
+      PRODUCT_COPY_FILES += device/qcom/gen4_gvm/gen4_fstab_metadata_f2fs/fstab_AB_dynamic_partition_variant.gen4.qti:$(TARGET_COPY_OUT_VENDOR_RAMDISK)/first_stage_ramdisk/fstab.gen4.qcom
+    else
+      PRODUCT_COPY_FILES += device/qcom/gen4_gvm/fstab_AB_dynamic_partition_variant.gen4.qti:$(TARGET_COPY_OUT_VENDOR_RAMDISK)/first_stage_ramdisk/fstab.gen4.qcom
+    endif
   else
-    PRODUCT_COPY_FILES += device/qcom/gen4_gvm/fstab_non_AB_dynamic_partition_variant.gen4.qti:$(TARGET_COPY_OUT_VENDOR_RAMDISK)/first_stage_ramdisk/fstab.gen4.qcom
+    ifeq (true,$(call math_gt_or_eq,$(SHIPPING_API_LEVEL),34))
+      PRODUCT_COPY_FILES += device/qcom/gen4_gvm/gen4_fstab_metadata_f2fs/fstab_non_AB_dynamic_partition_variant.gen4.qti:$(TARGET_COPY_OUT_VENDOR_RAMDISK)/first_stage_ramdisk/fstab.gen4.qcom
+    else
+      PRODUCT_COPY_FILES += device/qcom/gen4_gvm/fstab_non_AB_dynamic_partition_variant.gen4.qti:$(TARGET_COPY_OUT_VENDOR_RAMDISK)/first_stage_ramdisk/fstab.gen4.qcom
+    endif
   endif
 endif
-#PRODUCT_BUILD_SYSTEM_IMAGE := true
+
+PRODUCT_BUILD_SYSTEM_IMAGE := false
 PRODUCT_BUILD_SYSTEM_OTHER_IMAGE := false
+PRODUCT_BUILD_SYSTEM_EXT_IMAGE := false
 #PRODUCT_BUILD_VENDOR_IMAGE := true
 PRODUCT_BUILD_PRODUCT_IMAGE := false
 PRODUCT_BUILD_PRODUCT_SERVICES_IMAGE := false
@@ -120,11 +172,34 @@ PRODUCT_BUILD_USERDATA_IMAGE := true
 PRODUCT_BUILD_VENDOR_BOOT_IMAGE := true
 PRODUCT_BUILD_VENDOR_DLKM_IMAGE := true
 PRODUCT_BUILD_SYSTEM_DLKM_IMAGE := true
+TARGET_SKIP_OTA_PACKAGE := true
+
+ifeq ($(TARGET_BOARD_DERIVATIVE_SUFFIX), _microdroid)
+  # Enable system image generation for microdroid
+  PRODUCT_BUILD_SYSTEM_IMAGE := true
+  PRODUCT_BUILD_SYSTEM_EXT_IMAGE := true
+  PRODUCT_BUILD_PRODUCT_IMAGE := true
+  BOARD_BUILD_SUPER_IMAGE_BY_DEFAULT := true
+  PRODUCT_BUILD_SUPER_PARTITION := true
+  BOARD_AVB_PRODUCT_ADD_HASHTREE_FOOTER_ARGS += --hash_algorithm sha256
+endif
+
+ifeq ($(TARGET_SINGLE_TREE), true)
+  PRODUCT_BUILD_SYSTEM_IMAGE := true
+  PRODUCT_BUILD_SYSTEM_EXT_IMAGE := true
+  PRODUCT_BUILD_PRODUCT_IMAGE := true
+  BOARD_BUILD_SUPER_IMAGE_BY_DEFAULT := true
+  PRODUCT_BUILD_SUPER_PARTITION := true
+  TARGET_SKIP_OTA_PACKAGE := false
+endif
 
 #Using sha256 for dm-verity partitions.
 #system, system_other, system_ext and product.
 BOARD_AVB_SYSTEM_ADD_HASHTREE_FOOTER_ARGS += --hash_algorithm sha256
 BOARD_AVB_SYSTEM_EXT_ADD_HASHTREE_FOOTER_ARGS += --hash_algorithm sha256
+ifeq ($(TARGET_SINGLE_TREE), true)
+  BOARD_AVB_PRODUCT_ADD_HASHTREE_FOOTER_ARGS += --hash_algorithm sha256
+endif
 BOARD_AVB_VENDOR_ADD_HASHTREE_FOOTER_ARGS += --hash_algorithm sha256
 BOARD_AVB_SYSTEM_DLKM_ADD_HASHTREE_FOOTER_ARGS += --hash_algorithm sha256
 BOARD_AVB_VENDOR_DLKM_ADD_HASHTREE_FOOTER_ARGS += --hash_algorithm sha256
@@ -162,6 +237,8 @@ PRODUCT_DEVICE := gen4_gvm
 PRODUCT_BRAND := qti
 PRODUCT_MODEL := gen4_gvm for arm64
 
+PRODUCT_SOONG_NAMESPACES += hardware/qcom/wlan/qcwcn
+
 ###########
 #QMAA flags starts
 ###########
@@ -187,9 +264,10 @@ TARGET_USES_QMAA_OVERRIDE_CVP  := false
 TARGET_USES_QMAA_OVERRIDE_DATA_NET := false
 TARGET_USES_QMAA_OVERRIDE_DATA := false
 TARGET_USES_QMAA_OVERRIDE_DIAG := false
-TARGET_USES_QMAA_OVERRIDE_DISPLAY := false
+TARGET_USES_QMAA_OVERRIDE_DISPLAY := true
 TARGET_USES_QMAA_OVERRIDE_DPM  := false
 TARGET_USES_QMAA_OVERRIDE_DRM  := true
+TARGET_USES_QMAA_OVERRIDE_DRM_SMMU  := false
 TARGET_USES_QMAA_OVERRIDE_EID := false
 TARGET_USES_QMAA_OVERRIDE_FASTCV  := true
 TARGET_USES_QMAA_OVERRIDE_FASTRPC := false
@@ -337,6 +415,13 @@ PRODUCT_PACKAGES += $(PCIE_DLKM)
 # HS-I2S test app
 PRODUCT_PACKAGES += hsi2s_test
 
+#vnw apps and daemon
+PRODUCT_PACKAGES += qgptp \
+    libgptp.so \
+    gptp_cfg.ini \
+    libgptp_test
+
+
 PRODUCT_PACKAGES += fs_config_files
 
 #A/B related packages
@@ -345,7 +430,12 @@ PRODUCT_PACKAGES += update_engine \
     update_verifier \
     android.hardware.boot-service.qti \
     android.hardware.boot-service.qti.recovery \
-    update_engine_sideload
+
+ifeq ($(TARGET_SINGLE_TREE), true)
+PRODUCT_PACKAGES += android.hardware.boot@1.0-impl \
+                    android.hardware.boot@1.0-service \
+                    update_engine_sideload
+endif
 
 # bootctrl property
 PRODUCT_VENDOR_PROPERTIES += \
@@ -371,6 +461,9 @@ PRODUCT_COPY_FILES += \
 DEVICE_MANIFEST_FILE := device/qcom/gen4_gvm/manifest.xml
 DEVICE_MATRIX_FILE   := device/qcom/common/compatibility_matrix.xml
 DEVICE_FRAMEWORK_MANIFEST_FILE := device/qcom/gen4_gvm/framework_manifest.xml
+ifeq ($(TARGET_SINGLE_TREE), true)
+  DEVICE_FRAMEWORK_MANIFEST_FILE := device/qcom/qssi_au/framework_manifest.xml
+endif
 DEVICE_FRAMEWORK_COMPATIBILITY_MATRIX_FILE := vendor/qcom/opensource/core-utils/vendor_framework_compatibility_matrix.xml
 
 # Enable Scoped Storage related
@@ -433,6 +526,7 @@ TARGET_MOUNT_POINTS_SYMLINKS := false
 
 
 PRODUCT_PROPERTY_OVERRIDES += vendor.usb.diag_mdm.inst.name=diag_mdm2
+PRODUCT_PROPERTY_OVERRIDES += debug.sf.nobootanimation=1
 
 # enable audio hidl hal 5.0
 PRODUCT_PACKAGES += \
@@ -482,6 +576,72 @@ PRODUCT_ENFORCE_RRO_TARGETS := framework-res
 PRODUCT_PACKAGES += libnbaio
 
 PRODUCT_PRODUCT_PROPERTIES += persist.adb.tcp.port=5555
+
+ifeq ($(TARGET_SINGLE_TREE), true)
+  # Context hub HAL
+  PRODUCT_PACKAGES += \
+    android.hardware.contexthub@1.0-impl.generic \
+    android.hardware.contexthub@1.0-service
+
+  # system prop for enabling QFS (QTI Fingerprint Solution)
+  PRODUCT_PROPERTY_OVERRIDES += \
+    persist.vendor.qfp=true
+
+  PRODUCT_SYSTEM_PROPERTIES += \
+    persist.device_config.runtime_native_boot.iorap_perfetto_enable=true
+
+  PRODUCT_SYSTEM_PROPERTIES += ro.android.car.audio.enableaudiopatch=true
+
+  # USB default HAL
+  #PRODUCT_PACKAGES += \
+    android.hardware.usb@1.0-service
+
+  #PASR HAL and APP
+  PRODUCT_PACKAGES += \
+    vendor.qti.power.pasrmanager@1.0-service \
+    vendor.qti.power.pasrmanager@1.0-impl \
+    pasrservice
+
+  # CAN utils
+  PRODUCT_PACKAGES += candump \
+                    cansend \
+                    bcmserver \
+                    can-calc-bit-timing \
+                    canbusload \
+                    canfdtest \
+                    cangen \
+                    cangw \
+                    canlogserver \
+                    canplayer \
+                    cansniffer \
+                    isotpdump \
+                    isotprecv \
+                    isotpsend \
+                    isotpserver \
+                    isotptun \
+                    log2asc \
+                    log2long \
+                    slcan_attach \
+                    slcand \
+                    slcanpty
+
+  # copy system_ext specific whitelisted libraries to system_ext/etc
+  PRODUCT_COPY_FILES += \
+    device/qcom/qssi_au/public.libraries.system_ext-qti.txt:$(TARGET_COPY_OUT_SYSTEM_EXT)/etc/public.libraries-qti.txt
+
+  PRODUCT_PACKAGES += android.frameworks.automotive.display@1.0-service
+
+  TARGET_USES_MKE2FS := true
+
+  PRODUCT_PROPERTY_OVERRIDES += \
+    ro.crypto.volume.filenames_mode = "aes-256-cts" \
+    ro.crypto.allow_encrypt_override = true
+
+endif
+
+# Network utils
+PRODUCT_PACKAGES += ip_vendor \
+                    libiprouteutil_vendor
 
 # Set network mode to (T/L/G/W/1X/EVDO, T/L/G/W/1X/EVDO) for 7+7 mode device on DSDS mode
 PRODUCT_VENDOR_PROPERTIES += ro.telephony.default_network=22,22 \
@@ -668,6 +828,24 @@ PRODUCT_VENDOR_PROPERTIES += persist.bluetooth.enablenewavrcp=false
 
 # Add gsi avb keys
 PRODUCT_PACKAGES += qcar-gsi.avbpubkey
+
+ifeq ($(TARGET_SINGLE_TREE), true)
+  # Include mainline components and QSSI whitelist
+  ifeq (true,$(call math_gt_or_eq,$(SHIPPING_API_LEVEL),29))
+    $(call inherit-product, device/qcom/qssi_au/qssi_au_whitelist.mk)
+    PRODUCT_ARTIFACT_PATH_REQUIREMENT_IGNORE_PATHS := /system/system_ext/
+    PRODUCT_ENFORCE_ARTIFACT_PATH_REQUIREMENTS := false
+  endif
+
+  PRODUCT_PACKAGES += vendor.qti.qesdsys
+endif
+
+ifeq ($(TARGET_ENABLE_FASTRPC_TEST), true)
+ # Add Fastrpc test apps
+ PRODUCT_PACKAGES_DEBUG += calculator
+ PRODUCT_PACKAGES_DEBUG += libcalculator
+ PRODUCT_PACKAGES_DEBUG += libcalculator_skel
+endif
 
 ###################################################################################
 # This is the End of target.mk file.

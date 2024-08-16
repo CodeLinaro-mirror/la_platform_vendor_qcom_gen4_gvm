@@ -69,6 +69,17 @@ else
   TARGET_COPY_OUT_SYSTEM_EXT := system_ext
   BOARD_SYSTEM_EXTIMAGE_FILE_SYSTEM_TYPE := ext4
 
+ ifeq ($(TARGET_SINGLE_TREE), true)
+    BOARD_USES_PRODUCTIMAGE := true
+    TARGET_COPY_OUT_PRODUCT := product
+    BOARD_PRODUCTIMAGE_FILE_SYSTEM_TYPE := ext4
+ endif
+ ifeq ($(TARGET_BOARD_DERIVATIVE_SUFFIX), _microdroid)
+    BOARD_USES_PRODUCTIMAGE := true
+    TARGET_COPY_OUT_PRODUCT := product
+    BOARD_PRODUCTIMAGE_FILE_SYSTEM_TYPE := ext4
+ endif
+
   # System DLKM dynamic Partition support
   BOARD_USES_SYSTEM_DLKMIMAGE := true
   TARGET_COPY_OUT_SYSTEM_DLKM := system_dlkm
@@ -90,7 +101,13 @@ else
   endif
   BOARD_SUPER_PARTITION_GROUPS := qti_dynamic_partitions
   BOARD_QTI_DYNAMIC_PARTITIONS_SIZE := 6438256640 #(6GB - 4MB)
-  BOARD_QTI_DYNAMIC_PARTITIONS_PARTITION_LIST := vendor vendor_dlkm system_dlkm
+  ifeq ($(TARGET_SINGLE_TREE), true)
+    BOARD_QTI_DYNAMIC_PARTITIONS_PARTITION_LIST := vendor vendor_dlkm system_dlkm system system_ext product
+  else ifeq ($(TARGET_BOARD_DERIVATIVE_SUFFIX), _microdroid)
+    BOARD_QTI_DYNAMIC_PARTITIONS_PARTITION_LIST := vendor vendor_dlkm system_dlkm system system_ext product
+  else
+    BOARD_QTI_DYNAMIC_PARTITIONS_PARTITION_LIST := vendor vendor_dlkm system_dlkm
+  endif
   BOARD_EXT4_SHARE_DUP_BLOCKS := true
 endif
 
@@ -108,7 +125,20 @@ endif
 AB_OTA_UPDATER := true
 ifeq ($(ENABLE_AB), true)
  # Full A/B partition update set
-  AB_OTA_PARTITIONS ?= vendor vbmeta vendor_dlkm system_dlkm
+  ifneq ($(TARGET_USES_GY), true)
+    ifeq ($(TARGET_SINGLE_TREE), true)
+      AB_OTA_PARTITIONS ?= vendor vbmeta vendor_dlkm system_dlkm system system_ext product boot init_boot vendor_boot
+    else ifeq ($(TARGET_BOARD_DERIVATIVE_SUFFIX), _microdroid)
+      AB_OTA_PARTITIONS ?= vendor vbmeta vendor_dlkm system_dlkm system system_ext product boot init_boot vendor_boot
+    else
+      AB_OTA_PARTITIONS ?= vendor vbmeta vendor_dlkm system_dlkm boot init_boot vendor_boot
+    endif
+  else
+      AB_OTA_PARTITIONS ?= vendor vbmeta vendor_dlkm system_dlkm
+     ifeq ($(TARGET_SINGLE_TREE), true)
+      AB_OTA_PARTITIONS ?= vendor vbmeta vendor_dlkm system_dlkm system system_ext product
+     endif
+  endif #TARGET_USES_GY
 else
   AB_OTA_PARTITIONS ?= boot system
   ifneq ($(BOARD_USES_RECOVERY_AS_BOOT), true)
@@ -126,8 +156,12 @@ ifneq ($(AB_OTA_UPDATER),true)
   TARGET_RECOVERY_UPDATER_LIBS += librecovery_updater_msm
 endif
 
-TARGET_RECOVERY_FSTAB := device/qcom/gen4_gvm/fstab.gen4.qti
+TARGET_RECOVERY_FSTAB := device/qcom/gen4_gvm/gen4_fstab_metadata_f2fs/fstab.gen4.qti
+
+#Enable Metadata compilation and adding metadata related attributes
 BOARD_USES_METADATA_PARTITION := true
+BOARD_METADATAIMAGE_FILE_SYSTEM_TYPE := f2fs
+BOARD_METADATAIMAGE_PARTITION_SIZE := 67108864
 
 TARGET_HW_DISK_ENCRYPTION := false
 TARGET_HW_DISK_ENCRYPTION_PERF := false
@@ -140,6 +174,12 @@ ifeq ($(ENABLE_VENDOR_IMAGE), true)
   BOARD_PROPERTY_OVERRIDES_SPLIT_ENABLED := true
 endif
 
+ifneq ( ,$(filter V VanillaIceCream 15, $(PLATFORM_VERSION)))
+TARGET_ANDROID_BELOW_V15 := false
+else
+TARGET_ANDROID_BELOW_V15 := true
+endif
+
 TARGET_USERIMAGES_USE_EXT4 := true
 TARGET_USERIMAGES_USE_F2FS := true
 BOARD_BOOTIMAGE_PARTITION_SIZE := 0x04000000
@@ -148,7 +188,6 @@ BOARD_VENDOR_BOOTIMAGE_PARTITION_SIZE := 0x04000000
 BOARD_INIT_BOOT_IMAGE_PARTITION_SIZE := 0x00800000
 BOARD_USERDATAIMAGE_PARTITION_SIZE := 10737418240
 BOARD_PERSISTIMAGE_PARTITION_SIZE := 33554432
-BOARD_METADATAIMAGE_PARTITION_SIZE := 16777216
 BOARD_PREBUILT_DTBOIMAGE := out/target/product/gen4_gvm/prebuilt_dtbo.img
 BOARD_DTBOIMG_PARTITION_SIZE := 0x0800000
 BOARD_PERSISTIMAGE_FILE_SYSTEM_TYPE := ext4
@@ -172,7 +211,7 @@ TARGET_USES_ION := true
 TARGET_USES_NEW_ION_API :=true
 TARGET_USES_QCOM_BSP := false
 
-BOARD_BOOTCONFIG := androidboot.hardware=qcom androidboot.selinux=enforcing androidboot.memcg=1 androidboot.recover_usb=1 androidboot.dtbo_idx=1
+BOARD_BOOTCONFIG := androidboot.hardware=qcom androidboot.selinux=enforcing androidboot.memcg=1 androidboot.recover_usb=1
 
 BOARD_KERNEL_CMDLINE := debug user_debug=31 loglevel=9 print-fatal-signals=1  init=/init swiotlb=4096  kpti=0 pcie_ports=compat firmware_class.path=/vendor/firmware_mnt/image loop.max_part=7
 
@@ -261,6 +300,12 @@ SOONG_CONFIG_NAMESPACES += android_hardware_audio
 SOONG_CONFIG_android_hardware_audio += run_64bit
 SOONG_CONFIG_android_hardware_audio_run_64bit := true
 
+#namespace definition for qtiwifi
+#differentiate auto and non-auto target
+SOONG_CONFIG_NAMESPACES += qtiwifi
+SOONG_CONFIG_qtiwifi += automobile
+SOONG_CONFIG_qtiwifi_automobile := true
+
 #----------------------------------------------------------------------
 # wlan specific
 #----------------------------------------------------------------------
@@ -270,7 +315,7 @@ endif
 
 #Flag to enable System SDK Requirements.
 #All vendor APK will be compiled against system_current API set.
-BOARD_SYSTEMSDK_VERSIONS:= $(PRODUCT_SHIPPING_API_LEVEL)
+#BOARD_SYSTEMSDK_VERSIONS:= $(PRODUCT_SHIPPING_API_LEVEL)
 
 #Enable VNDK Compliance
 BOARD_VNDK_VERSION:=current
