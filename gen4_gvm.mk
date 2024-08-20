@@ -135,9 +135,6 @@ TARGET_GVMGH_SPECIFIC := false
 # RRO configuration
 TARGET_USES_RRO := true
 
-#Enable Userspace Restart
-$(call inherit-product, $(SRC_TARGET_DIR)/product/userspace_reboot.mk)
-
 ifneq ($(TARGET_BOARD_DERIVATIVE_SUFFIX), _microdroid)
   TARGET_HAS_VIRTIO_FASTRPC := true
   TARGET_HAS_HYBRID_FASTRPC := true
