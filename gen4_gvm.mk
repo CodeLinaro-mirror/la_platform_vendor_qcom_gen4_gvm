@@ -153,20 +153,21 @@ ifeq ($(strip $(BOARD_DYNAMIC_PARTITION_ENABLE)),true)
   # Mismatch in the uses-library tags between build system and the manifest leads
   # to soong APK manifest_check tool errors. Enable the flag to fix this.
   RELAX_USES_LIBRARY_CHECK := true
-
-  ifeq ($(ENABLE_AB), true)
-    ifeq (true,$(call math_gt_or_eq,$(SHIPPING_API_LEVEL),34))
-      PRODUCT_COPY_FILES += device/qcom/gen4_gvm/gen4_fstab_metadata_f2fs/fstab_AB_dynamic_partition_variant.gen4.qti:$(TARGET_COPY_OUT_VENDOR_RAMDISK)/first_stage_ramdisk/fstab.gen4.qcom
-    else
-      PRODUCT_COPY_FILES += device/qcom/gen4_gvm/fstab_AB_dynamic_partition_variant.gen4.qti:$(TARGET_COPY_OUT_VENDOR_RAMDISK)/first_stage_ramdisk/fstab.gen4.qcom
-    endif
-  else
-    ifeq (true,$(call math_gt_or_eq,$(SHIPPING_API_LEVEL),34))
-      PRODUCT_COPY_FILES += device/qcom/gen4_gvm/gen4_fstab_metadata_f2fs/fstab_non_AB_dynamic_partition_variant.gen4.qti:$(TARGET_COPY_OUT_VENDOR_RAMDISK)/first_stage_ramdisk/fstab.gen4.qcom
-    else
-      PRODUCT_COPY_FILES += device/qcom/gen4_gvm/fstab_non_AB_dynamic_partition_variant.gen4.qti:$(TARGET_COPY_OUT_VENDOR_RAMDISK)/first_stage_ramdisk/fstab.gen4.qcom
-    endif
-  endif
+ ifneq ($(TARGET_USES_GY),true)
+   ifeq ($(ENABLE_AB), true)
+     ifeq (true,$(call math_gt_or_eq,$(SHIPPING_API_LEVEL),34))
+       PRODUCT_COPY_FILES += device/qcom/gen4_gvm/gen4_fstab_metadata_f2fs/fstab_AB_dynamic_partition_variant.gen4.qti:$(TARGET_COPY_OUT_VENDOR_RAMDISK)/first_stage_ramdisk/fstab.gen4.qcom
+     else
+       PRODUCT_COPY_FILES += device/qcom/gen4_gvm/fstab_AB_dynamic_partition_variant.gen4.qti:$(TARGET_COPY_OUT_VENDOR_RAMDISK)/first_stage_ramdisk/fstab.gen4.qcom
+     endif
+   else
+     ifeq (true,$(call math_gt_or_eq,$(SHIPPING_API_LEVEL),34))
+       PRODUCT_COPY_FILES += device/qcom/gen4_gvm/gen4_fstab_metadata_f2fs/fstab_non_AB_dynamic_partition_variant.gen4.qti:$(TARGET_COPY_OUT_VENDOR_RAMDISK)/first_stage_ramdisk/fstab.gen4.qcom
+     else
+       PRODUCT_COPY_FILES += device/qcom/gen4_gvm/fstab_non_AB_dynamic_partition_variant.gen4.qti:$(TARGET_COPY_OUT_VENDOR_RAMDISK)/first_stage_ramdisk/fstab.gen4.qcom
+     endif
+   endif ## ENABLE_AB
+ endif ##TARGET_USES_GY
 endif
 
 PRODUCT_BUILD_SYSTEM_IMAGE := false
@@ -557,7 +558,9 @@ PRODUCT_PACKAGES += qcar-gsi.avbpubkey
 
 #add vndservicemanager
 PRODUCT_PACKAGES += vndservicemanager
+ifneq ($(TARGET_USES_GY),true)
 PRODUCT_PACKAGES += fstab.gen4.qcom
+endif
 
 #add neuralnetworks
 PRODUCT_PACKAGES += android.hardware.neuralnetworks@1.0.vendor \
