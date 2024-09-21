@@ -14,6 +14,11 @@ TARGET_DISABLE_DISPLAY_DLKM := false
 TARGET_DISABLE_AIS_DLKM := true
 TARGET_DISABLE_LIBVIRTDIAG := true
 
+#Enable c2c feature.
+ENABLE_C2C_SUPPORT := true
+PRODUCT_VENDOR_PROPERTIES += \
+      persist.vendor.c2c.enable=false
+
 AUDIO_USE_STUB_HAL := false
 # Skip VINTF checks for kernel configs since we do not have kernel source
 PRODUCT_OTA_ENFORCE_VINTF_KERNEL_REQUIREMENTS := false
