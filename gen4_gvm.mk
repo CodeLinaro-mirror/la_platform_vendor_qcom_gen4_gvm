@@ -14,7 +14,16 @@ TARGET_DISABLE_DISPLAY_DLKM := false
 TARGET_DISABLE_AIS_DLKM := true
 TARGET_DISABLE_LIBVIRTDIAG := true
 
-AUDIO_USE_STUB_HAL := false
+#Enable c2c feature.
+ENABLE_C2C_SUPPORT := true
+PRODUCT_VENDOR_PROPERTIES += \
+      persist.vendor.c2c.enable=false
+
+ifneq ($(TARGET_USES_AUDIOLITE), true)
+  AUDIO_USE_STUB_HAL := false
+else
+  AUDIO_USE_STUB_HAL := true
+endif
 # Skip VINTF checks for kernel configs since we do not have kernel source
 PRODUCT_OTA_ENFORCE_VINTF_KERNEL_REQUIREMENTS := false
 PRODUCT_MANUFACTURER := Qualcomm
@@ -112,20 +121,24 @@ BOARD_HAS_QCOM_WLAN := true
 ENABLE_CAR_POWER_MANAGER := true
 VPP_TARGET_USES_SERVICE := NO
 ENABLE_AUDIO_LEGACY_TECHPACK := false
-TARGET_USES_QCOM_MM_AUDIO := true
+
+ifneq ($(AUDIO_USE_STUB_HAL), true)
+  TARGET_USES_QCOM_MM_AUDIO := true
+else
+  TARGET_USES_QCOM_MM_AUDIO := false
+endif
 TARGET_GVMGH_SPECIFIC := false
 
 # RRO configuration
 TARGET_USES_RRO := true
-
-#Enable Userspace Restart
-$(call inherit-product, $(SRC_TARGET_DIR)/product/userspace_reboot.mk)
 
 ifneq ($(TARGET_BOARD_DERIVATIVE_SUFFIX), _microdroid)
   TARGET_HAS_VIRTIO_FASTRPC := true
   TARGET_HAS_HYBRID_FASTRPC := true
   TARGET_ENABLE_FASTRPC_TEST := true
 endif
+
+INSTALL_FASTADS_TEST_APPS := true
 
 # Dynamic-partition enabled by default
 BOARD_DYNAMIC_PARTITION_ENABLE := true
@@ -139,20 +152,21 @@ ifeq ($(strip $(BOARD_DYNAMIC_PARTITION_ENABLE)),true)
   # Mismatch in the uses-library tags between build system and the manifest leads
   # to soong APK manifest_check tool errors. Enable the flag to fix this.
   RELAX_USES_LIBRARY_CHECK := true
-
-  ifeq ($(ENABLE_AB), true)
-    ifeq (true,$(call math_gt_or_eq,$(SHIPPING_API_LEVEL),34))
-      PRODUCT_COPY_FILES += device/qcom/gen4_gvm/gen4_fstab_metadata_f2fs/fstab_AB_dynamic_partition_variant.gen4.qti:$(TARGET_COPY_OUT_VENDOR_RAMDISK)/first_stage_ramdisk/fstab.gen4.qcom
-    else
-      PRODUCT_COPY_FILES += device/qcom/gen4_gvm/fstab_AB_dynamic_partition_variant.gen4.qti:$(TARGET_COPY_OUT_VENDOR_RAMDISK)/first_stage_ramdisk/fstab.gen4.qcom
-    endif
-  else
-    ifeq (true,$(call math_gt_or_eq,$(SHIPPING_API_LEVEL),34))
-      PRODUCT_COPY_FILES += device/qcom/gen4_gvm/gen4_fstab_metadata_f2fs/fstab_non_AB_dynamic_partition_variant.gen4.qti:$(TARGET_COPY_OUT_VENDOR_RAMDISK)/first_stage_ramdisk/fstab.gen4.qcom
-    else
-      PRODUCT_COPY_FILES += device/qcom/gen4_gvm/fstab_non_AB_dynamic_partition_variant.gen4.qti:$(TARGET_COPY_OUT_VENDOR_RAMDISK)/first_stage_ramdisk/fstab.gen4.qcom
-    endif
-  endif
+ ifneq ($(TARGET_USES_GY),true)
+   ifeq ($(ENABLE_AB), true)
+     ifeq (true,$(call math_gt_or_eq,$(SHIPPING_API_LEVEL),34))
+       PRODUCT_COPY_FILES += device/qcom/gen4_gvm/gen4_fstab_metadata_f2fs/fstab_AB_dynamic_partition_variant.gen4.qti:$(TARGET_COPY_OUT_VENDOR_RAMDISK)/first_stage_ramdisk/fstab.gen4.qcom
+     else
+       PRODUCT_COPY_FILES += device/qcom/gen4_gvm/fstab_AB_dynamic_partition_variant.gen4.qti:$(TARGET_COPY_OUT_VENDOR_RAMDISK)/first_stage_ramdisk/fstab.gen4.qcom
+     endif
+   else
+     ifeq (true,$(call math_gt_or_eq,$(SHIPPING_API_LEVEL),34))
+       PRODUCT_COPY_FILES += device/qcom/gen4_gvm/gen4_fstab_metadata_f2fs/fstab_non_AB_dynamic_partition_variant.gen4.qti:$(TARGET_COPY_OUT_VENDOR_RAMDISK)/first_stage_ramdisk/fstab.gen4.qcom
+     else
+       PRODUCT_COPY_FILES += device/qcom/gen4_gvm/fstab_non_AB_dynamic_partition_variant.gen4.qti:$(TARGET_COPY_OUT_VENDOR_RAMDISK)/first_stage_ramdisk/fstab.gen4.qcom
+     endif
+   endif ## ENABLE_AB
+ endif ##TARGET_USES_GY
 endif
 
 PRODUCT_BUILD_SYSTEM_IMAGE := false
@@ -372,6 +386,7 @@ PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.hardware.ethernet.xml:system/etc/permissions/android.hardware.ethernet.xml
 
 #Audio DLKM
+ifneq ($(TARGET_USES_AUDIOLITE), true)
 AUDIO_DLKM := audio_apr.ko
 AUDIO_DLKM += audio_snd_event.ko
 AUDIO_DLKM += audio_q6_notifier.ko
@@ -382,6 +397,7 @@ AUDIO_DLKM += audio_hdmi.ko
 AUDIO_DLKM += audio_stub.ko
 AUDIO_DLKM += audio_native.ko
 AUDIO_DLKM += audio_machine_gen4.ko
+endif
 PRODUCT_PACKAGES += $(AUDIO_DLKM)
 
 # U-BRINGUP disable BT dlkm
@@ -541,7 +557,9 @@ PRODUCT_PACKAGES += qcar-gsi.avbpubkey
 
 #add vndservicemanager
 PRODUCT_PACKAGES += vndservicemanager
+ifneq ($(TARGET_USES_GY),true)
 PRODUCT_PACKAGES += fstab.gen4.qcom
+endif
 
 #add neuralnetworks
 PRODUCT_PACKAGES += android.hardware.neuralnetworks@1.0.vendor \
