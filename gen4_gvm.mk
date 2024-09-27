@@ -4,6 +4,7 @@ TARGET_BOARD_TYPE := auto
 TARGET_BOARD_SUFFIX := _gvm
 ENABLE_AIDL_VHAL := true
 ENABLE_AIDL_SENSOR := true
+ENABLE_DATA_AUTOMS := true
 # U-BRINGUP disable display
 TARGET_DISABLE_DISPLAY := false
 TARGET_IS_HEADLESS := false
@@ -79,7 +80,7 @@ ifeq ($(ENABLE_VIRTUAL_AB), true)
     $(call inherit-product, $(SRC_TARGET_DIR)/product/generic_ramdisk.mk)
     $(call inherit-product, $(SRC_TARGET_DIR)/product/virtual_ab_ota/android_t_baseline.mk)
   endif
-  PRODUCT_VIRTUAL_AB_COMPRESSION_METHOD := gz
+  PRODUCT_VIRTUAL_AB_COMPRESSION_METHOD := lz4
 endif
 # Enable AVB 2.0
 BOARD_AVB_ENABLE := true
