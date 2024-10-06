@@ -3,7 +3,10 @@
 # Product-specific compile-time definitions.
 #
 TARGET_KERNEL_DLKM_DISABLE := false
+
+ifeq ($(filter $(TARGET_BOARD_DERIVATIVE_SUFFIX), _cdcsdv _sdv),)
 TARGET_SEPOLICY_DIR := gen4_gvm
+endif
 
 TARGET_ARCH := arm64
 TARGET_ARCH_VARIANT := armv8-a
@@ -42,9 +45,11 @@ BOARD_USE_LEGACY_UI := true
 BOARD_BOOT_HEADER_VERSION := 4
 BOARD_MKBOOTIMG_ARGS := --header_version $(BOARD_BOOT_HEADER_VERSION)
 
+ifneq ($(filter $(TARGET_BOARD_DERIVATIVE_SUFFIX), _cdcsdv _sdv),)
 ifeq ($(TARGET_NO_RECOVERY), true)
 BOARD_MOVE_RECOVERY_RESOURCES_TO_VENDOR_BOOT := true
 BOARD_INCLUDE_RECOVERY_RAMDISK_IN_VENDOR_BOOT := true
+endif
 endif
 
 # Specify init boot header version
@@ -329,7 +334,9 @@ BOARD_VNDK_VERSION:=current
 -include vendor/qcom/defs/board-defs/vendor/*.mk
 #################################################################################
 
+ifeq ($(filter $(TARGET_BOARD_DERIVATIVE_SUFFIX), _cdcsdv _sdv),)
 include device/qcom/sepolicy_vndr/SEPolicy.mk
+endif
 
 BUILD_BROKEN_NINJA_USES_ENV_VARS := SDCLANG_AE_CONFIG SDCLANG_CONFIG SDCLANG_SA_ENABLED SDCLANG_CONFIG_AOSP
 BUILD_BROKEN_NINJA_USES_ENV_VARS += TEMPORARY_DISABLE_PATH_RESTRICTIONS
