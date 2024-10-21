@@ -84,7 +84,6 @@ ifeq ($(ENABLE_VIRTUAL_AB), true)
 endif
 # Enable AVB 2.0
 BOARD_AVB_ENABLE := true
-BOARD_USES_QCNE := false
 TARGET_BOARD_AUTO := true
 TARGET_USES_AOSP := true
 #TODO(amutyala) to revert this once QSSI 15 component created
