@@ -32,6 +32,7 @@
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
 import /vendor/etc/init/hw/init.qti.kernel.rc
+import /system_ext/etc/init/automs_vlan.rc
 
 on early-init
 #    chown system system /sys/kernel/boot_kpi/kpi_values
