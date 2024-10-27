@@ -6,7 +6,7 @@ ENABLE_AIDL_VHAL := true
 ENABLE_AIDL_SENSOR := true
 ENABLE_DATA_AUTOMS := true
 # U-BRINGUP disable display
-TARGET_DISABLE_DISPLAY := false
+TARGET_DISABLE_DISPLAY := false 
 TARGET_IS_HEADLESS := false
 TARGET_DISABLE_CODEC2 := true
 TARGET_DISABLE_VPP_FILTER := true
@@ -14,6 +14,8 @@ TARGET_DISABLE_HSI2S_DLKM := false
 TARGET_DISABLE_DISPLAY_DLKM := false
 TARGET_DISABLE_AIS_DLKM := true
 TARGET_DISABLE_LIBVIRTDIAG := true
+
+TARGET_ENABLE_AIS_CUST := false
 
 AUDIO_USE_STUB_HAL := false
 # Skip VINTF checks for kernel configs since we do not have kernel source
@@ -51,8 +53,9 @@ ifeq ($(TARGET_SINGLE_TREE), true)
   AUDIO_FEATURE_ENABLED_SVA_MULTI_STAGE := true
 endif
 
-PRODUCT_VENDOR_PROPERTIES += \
+PRODUCT_PROPERTY_OVERRIDES += \
     ro.soc.manufacturer=$(PRODUCT_MANUFACTURER) \
+
 # Enable support for APEX updates
 $(call inherit-product, $(SRC_TARGET_DIR)/product/updatable_apex.mk)
 
@@ -126,7 +129,7 @@ TARGET_USES_RRO := true
 #Enable Userspace Restart
 $(call inherit-product, $(SRC_TARGET_DIR)/product/userspace_reboot.mk)
 
-ifneq ($(TARGET_BOARD_DERIVATIVE_SUFFIX), _microdroid)
+ifeq ($(filter $(TARGET_BOARD_DERIVATIVE_SUFFIX), _cdcsdv _microdroid _sdv),)
   TARGET_HAS_VIRTIO_FASTRPC := true
   TARGET_HAS_HYBRID_FASTRPC := true
   TARGET_ENABLE_FASTRPC_TEST := true
@@ -176,7 +179,7 @@ PRODUCT_BUILD_SYSTEM_DLKM_IMAGE := true
 TARGET_SKIP_OTA_PACKAGE := true
 
 ifeq ($(TARGET_BOARD_DERIVATIVE_SUFFIX), _microdroid)
-  # Enable system image generation for microdroid
+  # Enable system image generation 
   PRODUCT_BUILD_SYSTEM_IMAGE := true
   PRODUCT_BUILD_SYSTEM_EXT_IMAGE := true
   PRODUCT_BUILD_PRODUCT_IMAGE := true
@@ -268,7 +271,7 @@ TARGET_USES_QMAA_OVERRIDE_DIAG := false
 TARGET_USES_QMAA_OVERRIDE_DISPLAY := true
 TARGET_USES_QMAA_OVERRIDE_DPM  := false
 TARGET_USES_QMAA_OVERRIDE_DRM  := true
-TARGET_USES_QMAA_OVERRIDE_DRM_SMMU  := false
+TARGET_USES_QMAA_OVERRIDE_DRM_SMMU  := true
 TARGET_USES_QMAA_OVERRIDE_EID := false
 TARGET_USES_QMAA_OVERRIDE_FASTCV  := true
 TARGET_USES_QMAA_OVERRIDE_FASTRPC := false
@@ -426,7 +429,12 @@ PRODUCT_PACKAGES += qgptp \
 PRODUCT_PACKAGES += fs_config_files
 
 #A/B related packages
-PRODUCT_PACKAGES += update_engine \
+
+ifeq ($(filter $(TARGET_BOARD_DERIVATIVE_SUFFIX), _cdcsdv _sdv),)
+PRODUCT_PACKAGES += update_engine 
+endif
+
+PRODUCT_PACKAGES += \
     update_engine_client \
     update_verifier \
     android.hardware.boot-service.qti \
@@ -437,6 +445,10 @@ PRODUCT_PACKAGES += android.hardware.boot@1.0-impl \
                     android.hardware.boot@1.0-service \
                     update_engine_sideload
 endif
+
+# drm_smmu property
+PRODUCT_VENDOR_PROPERTIES += \
+    persist.vendor.drm.smmu=0
 
 # bootctrl property
 PRODUCT_VENDOR_PROPERTIES += \
@@ -507,7 +519,9 @@ PRODUCT_COMPATIBLE_PROPERTY_OVERRIDE := true
 #Enable vndk-sp Libraries
 PRODUCT_PACKAGES += vndk_package
 
+ifeq ($(filter $(TARGET_BOARD_DERIVATIVE_SUFFIX), _cdcsdv _sdv),)
 DEVICE_PACKAGE_OVERLAYS += device/qcom/gen4_gvm/overlay
+endif
 
 # Enable flag to support slow devices
 TARGET_PRESIL_SLOW_BOARD := true
