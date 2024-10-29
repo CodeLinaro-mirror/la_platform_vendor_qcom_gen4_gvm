@@ -40,10 +40,11 @@ on early-init
     write /sys/block/dm-9/queue/read_ahead_kb 4096
     write /sys/block/dm-10/queue/read_ahead_kb 4096
     write /sys/block/dm-11/queue/read_ahead_kb 4096
-#    chown system system /sys/kernel/boot_kpi/kpi_values
-    write /proc/sys/kernel/sched_boost 1
+    chown system system /sys/kernel/boot_kpi/kpi_values
+#   write /proc/sys/kernel/sched_boost 1
     symlink /data/tombstones /tombstones
-    write /dev/kmsg "boot_kpi: M - INITRC Userspace Start"
+#   write /dev/kmsg "boot_kpi: M - INITRC Userspace Start"
+    write /sys/kernel/boot_kpi/kpi_values "M - INITRC Userspace Start"
 
 # Elite
 on early-init && property:ro.boot.audio=""
@@ -64,15 +65,15 @@ on early-init && property:ro.boot.audio=audioreach_vio
      setprop ro.hardware.audio.primary "gen4.ar"
      setprop ro.hardware.sound_trigger.primary "gen4.ar"
 
-on init
-    write /dev/stune/foreground/schedtune.sched_boost_no_override 1
-    write /dev/stune/top-app/schedtune.sched_boost_no_override 1
-    write /dev/stune/schedtune.colocate 0
-    write /dev/stune/background/schedtune.colocate 0
-    write /dev/stune/system-background/schedtune.colocate 0
-    write /dev/stune/foreground/schedtune.colocate 0
-    write /dev/stune/top-app/schedtune.colocate 1
-    write /sys/module/qpnp_rtc/parameters/poweron_alarm 1
+#on init
+    # write /dev/stune/foreground/schedtune.sched_boost_no_override 1
+    # write /dev/stune/top-app/schedtune.sched_boost_no_override 1
+    # write /dev/stune/schedtune.colocate 0
+    # write /dev/stune/background/schedtune.colocate 0
+    # write /dev/stune/system-background/schedtune.colocate 0
+    # write /dev/stune/foreground/schedtune.colocate 0
+    # write /dev/stune/top-app/schedtune.colocate 1
+    # write /sys/module/qpnp_rtc/parameters/poweron_alarm 1
 
 on init && property:vendor.gdb.dump=true
     setrlimit 4 -1 -1
@@ -124,8 +125,8 @@ on boot
     chown radio radio /data/vendor/netmgr/recovery/recovery_info
 
     #update cpusets for background tasks on gvm
-    write /dev/cpuset/background/cpus 4-7
-    write /dev/cpuset/system-background/cpus 4-7
+    write /dev/cpuset/background/cpus 0-7
+    write /dev/cpuset/system-background/cpus 0-7
 
     chown vehicle_network /sys/devices/platform/soc/1da4000.ufshc2/qcom/ufs_pm_mode
     chmod 0660 /sys/devices/platform/soc/1da4000.ufshc2/qcom/ufs_pm_mode
@@ -140,10 +141,10 @@ on boot
     chmod 0660 /dev/cpuset/camera-daemon/tasks
 
 #USB controller configuration
-    setprop vendor.usb.rndis.func.name "gsi"
-    setprop vendor.usb.rmnet.func.name "gsi"
-    setprop vendor.usb.rmnet.inst.name "rmnet"
-    setprop vendor.usb.dpl.inst.name "dpl"
+    # setprop vendor.usb.rndis.func.name "gsi"
+    # setprop vendor.usb.rmnet.func.name "gsi"
+    # setprop vendor.usb.rmnet.inst.name "rmnet"
+    # setprop vendor.usb.dpl.inst.name "dpl"
     setprop vendor.usb.qdss.inst.name "qdss_sw"
     setprop sys.usb.configfs 1
 
@@ -157,16 +158,20 @@ on property:vendor.usb.controller=*
     setprop sys.usb.controller ${vendor.usb.controller}
 
 on property:init.svc.zygote=running
-     write /dev/kmsg "boot_kpi:M - USER Zygote Start"
+#    write /dev/kmsg "boot_kpi:M - USER Zygote Start"
+     write /sys/kernel/boot_kpi/kpi_values "M - USER Zygote Start"
 
 on property:service.bootanim.exit=0
-    write /dev/kmsg "boot_kpi: K - USER Boot Animation Start"
+#    write /dev/kmsg "boot_kpi: K - USER Boot Animation Start"
+     write /sys/kernel/boot_kpi/kpi_values "K - USER Boot Animation Start"
 
 on property:sys.boot_completed=1
-    write /dev/kmsg "boot_kpi: K - USER Android Boot Complete"
+#    write /dev/kmsg "boot_kpi: K - USER Android Boot Complete"
+     write /sys/kernel/boot_kpi/kpi_values "K - USER Android Boot Complete"
 
 on property:init.svc.surfaceflinger=running
-    write /dev/kmsg "boot_kpi: M - USER SurfaceFlinger Start"
+#    write /dev/kmsg "boot_kpi: M - USER SurfaceFlinger Start"
+     write /sys/kernel/boot_kpi/kpi_values "M - USER SurfaceFlinger Start"
 
 
 #pd-mapper
