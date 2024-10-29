@@ -813,6 +813,11 @@ PRODUCT_VENDOR_PROPERTIES += persist.vendor.car.lpm=true
 # default wifi country code
 PRODUCT_VENDOR_PROPERTIES += ro.boot.wificountrycode=us
 
+PRODUCT_VENDOR_PROPERTIES += vendor.usb.rndis.func.name=gsi \
+                             vendor.usb.rmnet.func.name=gsi \
+                             vendor.usb.rmnet.inst.name=rmnet \
+                             vendor.usb.dpl.inst.name=dpl \
+
 # The property "persist.bluetooth.enablenewavrcp" is introduced in AOSP.
 # See commit e63f6d6bda16bd94d43537fc5db754a103c6a757
 # (1) If the property is set as true, it indicates that AVRCP(TG) is enabled.
