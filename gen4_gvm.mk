@@ -24,7 +24,7 @@ ifeq ($(TARGET_SINGLE_TREE), true)
   PRODUCT_PRODUCT_VNDK_VERSION := current
   #TODO(amutyala) to revert once QSSI 15 component created
   #This change requires to build super image (QSSI15 + V14)
-  ifeq (,$(filter VanillaIceCream V 35, $(PLATFORM_VNDK_VERSION)))
+  ifeq (,$(filter VanillaIceCream V 35 W Baklava 16, $(PLATFORM_VNDK_VERSION)))
     PRODUCT_EXTRA_VNDK_VERSIONS := 33
   else
     PRODUCT_EXTRA_VNDK_VERSIONS := 33 34
@@ -89,7 +89,7 @@ BOARD_USES_QCNE := false
 TARGET_BOARD_AUTO := true
 TARGET_USES_AOSP := true
 #TODO(amutyala) to revert this once QSSI 15 component created
-ifeq (,$(filter VanillaIceCream V 35, $(PLATFORM_VNDK_VERSION)))
+ifeq (,$(filter VanillaIceCream V 35 W Baklava 16, $(PLATFORM_VNDK_VERSION)))
   TARGET_USES_GAS := true
 endif
 TARGET_USES_QCOM_BSP := false
