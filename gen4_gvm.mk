@@ -141,6 +141,8 @@ ifneq ($(TARGET_BOARD_DERIVATIVE_SUFFIX), _microdroid)
   TARGET_ENABLE_FASTRPC_TEST := true
 endif
 
+INSTALL_FASTADS_TEST_APPS := true
+
 # Dynamic-partition enabled by default
 BOARD_DYNAMIC_PARTITION_ENABLE := true
 ifeq ($(strip $(BOARD_DYNAMIC_PARTITION_ENABLE)),true)
