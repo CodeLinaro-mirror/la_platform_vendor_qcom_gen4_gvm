@@ -176,7 +176,7 @@ PRODUCT_BUILD_VENDOR_DLKM_IMAGE := true
 PRODUCT_BUILD_SYSTEM_DLKM_IMAGE := true
 TARGET_SKIP_OTA_PACKAGE := true
 
-ifeq ($(filter $(TARGET_BOARD_DERIVATIVE_SUFFIX), _microdroid),)
+ifeq ($(TARGET_BOARD_DERIVATIVE_SUFFIX), _microdroid),)
   # Enable system image generation 
   PRODUCT_BUILD_SYSTEM_IMAGE := true
   PRODUCT_BUILD_SYSTEM_EXT_IMAGE := true
