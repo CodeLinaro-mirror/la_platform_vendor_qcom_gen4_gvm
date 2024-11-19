@@ -334,9 +334,7 @@ BOARD_VNDK_VERSION:=current
 -include vendor/qcom/defs/board-defs/vendor/*.mk
 #################################################################################
 
-ifeq ($(filter $(TARGET_BOARD_DERIVATIVE_SUFFIX), _cdcsdv _sdv),)
 include device/qcom/sepolicy_vndr/SEPolicy.mk
-endif
 
 BUILD_BROKEN_NINJA_USES_ENV_VARS := SDCLANG_AE_CONFIG SDCLANG_CONFIG SDCLANG_SA_ENABLED SDCLANG_CONFIG_AOSP
 BUILD_BROKEN_NINJA_USES_ENV_VARS += TEMPORARY_DISABLE_PATH_RESTRICTIONS
