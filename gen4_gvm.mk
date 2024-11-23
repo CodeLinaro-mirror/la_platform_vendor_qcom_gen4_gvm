@@ -559,7 +559,8 @@ PRODUCT_PACKAGES += \
 
 #eavb fe lib and app
 PRODUCT_PACKAGES += libeavbfe \
-            eavbfe_test
+            eavbfe_test \
+            libqavb_pcm_plugin
 
 #Boot control HAL test app
 PRODUCT_PACKAGES_DEBUG += bootctl
