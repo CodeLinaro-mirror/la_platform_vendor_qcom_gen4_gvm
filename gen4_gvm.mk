@@ -162,6 +162,11 @@ ifeq ($(strip $(BOARD_DYNAMIC_PARTITION_ENABLE)),true)
   endif
 endif
 
+ifneq (,$(filter _cdccomm _sdvcomm, $(TARGET_BOARD_DERIVATIVE_SUFFIX)))
+    PRODUCT_PROPERTY_OVERRIDES += vendor.usb.rncdc.bsample.controller=a600000.dwc3
+    PRODUCT_PROPERTY_OVERRIDES += vendor.usb.rncdc.dvsample.controller=a400000.dwc3
+endif
+
 PRODUCT_BUILD_SYSTEM_IMAGE := false
 PRODUCT_BUILD_SYSTEM_OTHER_IMAGE := false
 PRODUCT_BUILD_SYSTEM_EXT_IMAGE := false
