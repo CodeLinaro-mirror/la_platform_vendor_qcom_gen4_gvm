@@ -169,8 +169,20 @@ on property:ro.boot.usbcontroller=*
 on boot && property:persist.vendor.usb.controller.default=*
     setprop vendor.usb.controller ${persist.vendor.usb.controller.default}
 
-on property:vendor.usb.controller=*
+on property:vendor.usb.controller=* && property:ro.boot.hwversion=1
     setprop sys.usb.controller ${vendor.usb.controller}
+
+on property:vendor.usb.controller=* && property:ro.boot.hwversion=2 && property:ro.product.name=gen4_gvm_cdccomm
+    write /sys/devices/platform/soc/a600000.ssusb/mode peripheral
+    write /sys/devices/platform/soc/a400000.hsusb/mode host
+    setprop vendor.usb.rncdc.bsample.controller ${vendor.usb.controller}
+    setprop sys.usb.controller ${vendor.usb.rncdc.bsample.controller}
+
+on property:vendor.usb.controller=* && property:ro.boot.hwversion=3 && property:ro.product.name=gen4_gvm_cdccomm
+    write /sys/devices/platform/soc/a600000.ssusb/mode host
+    write /sys/devices/platform/soc/a400000.hsusb/mode peripheral
+    setprop vendor.usb.rncdc.dvsample.controller ${vendor.usb.controller}
+    setprop sys.usb.controller ${vendor.usb.rncdc.dvsample.controller}
 
 on property:init.svc.zygote=running
      write /dev/kmsg "boot_kpi:M - USER Zygote Start"
