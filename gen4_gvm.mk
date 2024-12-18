@@ -823,6 +823,9 @@ PRODUCT_VENDOR_PROPERTIES += vendor.usb.rndis.func.name=gsi \
 # So the property should be set as false.
 PRODUCT_VENDOR_PROPERTIES += persist.bluetooth.enablenewavrcp=false
 
+#Key derivation in vts kernel encryption tests use legacykdf
+PRODUCT_VENDOR_PROPERTIES += ro.crypto.hw_wrapped_keys.kdf=legacykdf
+
 # Add gsi avb keys
 PRODUCT_PACKAGES += qcar-gsi.avbpubkey
 
