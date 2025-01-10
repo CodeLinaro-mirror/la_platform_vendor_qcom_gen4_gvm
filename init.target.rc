@@ -40,6 +40,14 @@ on early-init
     write /sys/block/dm-9/queue/read_ahead_kb 4096
     write /sys/block/dm-10/queue/read_ahead_kb 4096
     write /sys/block/dm-11/queue/read_ahead_kb 4096
+    write /sys/block/vda/queue/read_ahead_kb 4096
+    write /sys/block/vdb/queue/read_ahead_kb 4096
+    write /sys/block/vdc/queue/read_ahead_kb 4096
+    write /sys/block/vdd/queue/read_ahead_kb 4096
+    write /sys/block/vde/queue/read_ahead_kb 4096
+    write /sys/block/vdf/queue/read_ahead_kb 4096
+    write /sys/block/vdg/queue/read_ahead_kb 4096
+    write /sys/block/vdl/queue/read_ahead_kb 4096
     chown system system /sys/kernel/boot_kpi/kpi_values
 #   write /proc/sys/kernel/sched_boost 1
     symlink /data/tombstones /tombstones
