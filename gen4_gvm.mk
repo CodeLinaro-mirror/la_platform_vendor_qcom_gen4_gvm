@@ -421,7 +421,8 @@ PRODUCT_PACKAGES += hsi2s_test
 PRODUCT_PACKAGES += qgptp \
     libgptp.so \
     gptp_cfg.ini \
-    libgptp_test
+    libgptp_test \
+    utc_ts
 
 
 PRODUCT_PACKAGES += fs_config_files
