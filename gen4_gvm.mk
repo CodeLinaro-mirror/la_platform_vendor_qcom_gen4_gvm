@@ -94,10 +94,6 @@ BOARD_AVB_ENABLE := true
 BOARD_USES_QCNE := false
 TARGET_BOARD_AUTO := true
 TARGET_USES_AOSP := true
-#TODO(amutyala) to revert this once QSSI 15 component created
-ifeq (,$(filter VanillaIceCream V 35, $(PLATFORM_VNDK_VERSION)))
-  TARGET_USES_GAS := true
-endif
 TARGET_USES_QCOM_BSP := false
 TARGET_NO_TELEPHONY := true
 TARGET_USES_QTIC := false
@@ -826,6 +822,9 @@ PRODUCT_VENDOR_PROPERTIES += vendor.usb.rndis.func.name=gsi \
 # However in Automotive SP, AVRCP(CT) is enabled in Car UI.
 # So the property should be set as false.
 PRODUCT_VENDOR_PROPERTIES += persist.bluetooth.enablenewavrcp=false
+
+#Key derivation in vts kernel encryption tests use legacykdf
+PRODUCT_VENDOR_PROPERTIES += ro.crypto.hw_wrapped_keys.kdf=legacykdf
 
 # Add gsi avb keys
 PRODUCT_PACKAGES += qcar-gsi.avbpubkey
