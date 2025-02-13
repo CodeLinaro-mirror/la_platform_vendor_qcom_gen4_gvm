@@ -112,10 +112,7 @@ ifeq ($(TARGET_SINGLE_TREE), true)
 endif
 TARGET_USES_AOSP_FOR_WLAN := true
 
-# Disable WLAN for Gunyah hypervisor based GVM .
-ifneq ($(strip $(TARGET_BOARD_DERIVATIVE_SUFFIX)),_gy)
 BOARD_HAS_QCOM_WLAN := true
-endif
 
 ENABLE_CAR_POWER_MANAGER := true
 VPP_TARGET_USES_SERVICE := NO
