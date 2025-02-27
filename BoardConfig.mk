@@ -39,6 +39,8 @@ BOARD_HAVE_BLUETOOTH := true
 BOARD_USES_WIPOWER := false
 BOARD_BLUETOOTH_BDROID_BUILDCFG_INCLUDE_DIR := device/qcom/common/automotive
 
+BUILD_BROKEN_INCORRECT_PARTITION_IMAGES := true
+
 USE_OPENGL_RENDERER := true
 BOARD_USE_LEGACY_UI := true
 # Set Header version for bootimage
@@ -179,7 +181,7 @@ ifeq ($(ENABLE_VENDOR_IMAGE), true)
   BOARD_PROPERTY_OVERRIDES_SPLIT_ENABLED := true
 endif
 
-ifneq ( ,$(filter V VanillaIceCream 15, $(PLATFORM_VERSION)))
+ifneq ( ,$(filter V VanillaIceCream 15 W Baklava 16, $(PLATFORM_VERSION)))
 TARGET_ANDROID_BELOW_V15 := false
 else
 TARGET_ANDROID_BELOW_V15 := true
@@ -346,6 +348,10 @@ BUILD_BROKEN_USES_BUILD_HOST_EXECUTABLE := true
 BUILD_BROKEN_USES_BUILD_COPY_HEADERS := true
 BUILD_BROKEN_USES_BUILD_HOST_STATIC_LIBRARY := true
 BUILD_BROKEN_CLANG_PROPERTY := true
-BUILD_BROKEN_USES_SOONG_PYTHON2_MODULES := true
+# BUILD_BROKEN_USES_SOONG_PYTHON2_MODULES := true
 #Enable Camera2 APIs on automotive builds
 ENABLE_CAMERA_SERVICE := true
+
+$(call add_soong_config_namespace,qti)
+$(call soong_config_set,qti,qti_android_version_above_16,true)
+
