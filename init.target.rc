@@ -134,8 +134,8 @@ on boot
     chown radio radio /data/vendor/netmgr/recovery/recovery_info
 
     #update cpusets for background tasks on gvm
-    write /dev/cpuset/background/cpus 0-7
-    write /dev/cpuset/system-background/cpus 0-7
+    write /dev/cpuset/background/cpus 4-7
+    write /dev/cpuset/system-background/cpus 4-7
 
     chown vehicle_network /sys/devices/platform/soc/1da4000.ufshc2/qcom/ufs_pm_mode
     chmod 0660 /sys/devices/platform/soc/1da4000.ufshc2/qcom/ufs_pm_mode
