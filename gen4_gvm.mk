@@ -11,13 +11,16 @@ TARGET_IS_HEADLESS := false
 TARGET_DISABLE_CODEC2 := true
 TARGET_DISABLE_VPP_FILTER := true
 TARGET_DISABLE_HSI2S_DLKM := false
-TARGET_DISABLE_DISPLAY_DLKM := false
+TARGET_DISABLE_DISPLAY_DLKM := true
 TARGET_DISABLE_AIS_DLKM := true
 TARGET_DISABLE_LIBVIRTDIAG := true
 
 TARGET_ENABLE_AIS_CUST := false
 
-AUDIO_USE_STUB_HAL := false
+TARGET_KERNEL_DLKM_SECURE_MSM_OVERRIDE := false
+TARGET_KERNEL_DLKM_SECUREMSM_QTEE_OVERRIDE := false
+
+AUDIO_USE_STUB_HAL := true
 # Skip VINTF checks for kernel configs since we do not have kernel source
 PRODUCT_OTA_ENFORCE_VINTF_KERNEL_REQUIREMENTS := false
 PRODUCT_MANUFACTURER := Qualcomm
@@ -114,7 +117,7 @@ TARGET_USES_AOSP_FOR_WLAN := true
 
 # Disable WLAN for Gunyah hypervisor based GVM .
 ifneq ($(strip $(TARGET_BOARD_DERIVATIVE_SUFFIX)),_gy)
-BOARD_HAS_QCOM_WLAN := true
+BOARD_HAS_QCOM_WLAN := false
 endif
 
 ENABLE_CAR_POWER_MANAGER := true
@@ -268,7 +271,7 @@ TARGET_USES_QMAA_OVERRIDE_CVP  := false
 TARGET_USES_QMAA_OVERRIDE_DATA_NET := false
 TARGET_USES_QMAA_OVERRIDE_DATA := false
 TARGET_USES_QMAA_OVERRIDE_DIAG := false
-TARGET_USES_QMAA_OVERRIDE_DISPLAY := true
+TARGET_USES_QMAA_OVERRIDE_DISPLAY := false
 TARGET_USES_QMAA_OVERRIDE_DPM  := false
 TARGET_USES_QMAA_OVERRIDE_DRM  := true
 TARGET_USES_QMAA_OVERRIDE_DRM_SMMU  := true
@@ -277,7 +280,7 @@ TARGET_USES_QMAA_OVERRIDE_FASTCV  := false
 TARGET_USES_QMAA_OVERRIDE_FASTRPC := false
 TARGET_USES_QMAA_OVERRIDE_FM  := true
 TARGET_USES_QMAA_OVERRIDE_FTM := false
-TARGET_USES_QMAA_OVERRIDE_GFX := true
+TARGET_USES_QMAA_OVERRIDE_GFX := false
 TARGET_USES_QMAA_OVERRIDE_GPS := false
 TARGET_USES_QMAA_OVERRIDE_GP := true
 TARGET_USES_QMAA_OVERRIDE_GPT := false
@@ -302,6 +305,7 @@ TARGET_USES_QMAA_OVERRIDE_VIDEO   := false
 TARGET_USES_QMAA_OVERRIDE_VPP := false
 TARGET_USES_QMAA_OVERRIDE_WFD     := true
 TARGET_USES_QMAA_OVERRIDE_WLAN    := true
+TARGET_USES_QMAA_OVERRIDE_HSI2S := false
 
 TARGET_ENABLE_QSEECOM := true
 #Full QMAA HAL List
@@ -805,7 +809,6 @@ PRODUCT_VENDOR_PROPERTIES += vendor.perf.gestureflingboost.enable=true
 #Enable ULMK properties
 PRODUCT_VENDOR_PROPERTIES += ro.lmk.kill_heaviest_task=true \
                             ro.lmk.kill_timeout_ms=15 \
-                            ro.lmk.use_minfree_levels=true \
                             ro.lmk.enhance_batch_kill=true \
                             ro.lmk.enable_adaptive_lmk=true \
                             ro.lmk.vmpressure_file_min=80640 \
