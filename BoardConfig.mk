@@ -39,8 +39,6 @@ BOARD_HAVE_BLUETOOTH := true
 BOARD_USES_WIPOWER := false
 BOARD_BLUETOOTH_BDROID_BUILDCFG_INCLUDE_DIR := device/qcom/common/automotive
 
-BUILD_BROKEN_INCORRECT_PARTITION_IMAGES := true
-
 USE_OPENGL_RENDERER := true
 BOARD_USE_LEGACY_UI := true
 # Set Header version for bootimage
