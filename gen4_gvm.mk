@@ -424,7 +424,9 @@ PRODUCT_PACKAGES += qgptp \
     libgptp.so \
     gptp_cfg.ini \
     libgptp_test \
-    utc_ts
+    utc_ts \
+    libutc.so \
+    libutc_test
 
 
 PRODUCT_PACKAGES += fs_config_files
