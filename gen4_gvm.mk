@@ -332,7 +332,7 @@ ifeq ($(ENABLE_VENDOR_IMAGE),)
   ENABLE_VENDOR_IMAGE := false
 endif
 
-TARGET_KERNEL_VERSION := 6.1
+TARGET_KERNEL_VERSION := 6.12
 TARGET_HAS_GENERIC_KERNEL_HEADERS := true
 
 #Enable llvm support for kernel
