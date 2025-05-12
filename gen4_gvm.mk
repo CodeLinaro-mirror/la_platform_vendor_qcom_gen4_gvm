@@ -570,6 +570,10 @@ PRODUCT_PACKAGES += libeavbfe \
 #Boot control HAL test app
 PRODUCT_PACKAGES_DEBUG += bootctl
 
+#Enable fuzzers for userdebug builds
+PRODUCT_PACKAGES_DEBUG += aidl_fuzzer_bootctrl
+PRODUCT_PACKAGES_DEBUG += vhalserver_fuzzer
+
 PRODUCT_PACKAGES += \
    update_engine_sideload
 
