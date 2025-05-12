@@ -419,7 +419,9 @@ PRODUCT_PACKAGES += qgptp \
     libgptp.so \
     gptp_cfg.ini \
     libgptp_test \
-    utc_ts
+    utc_ts \
+    libutc.so \
+    libutc_test
 
 
 PRODUCT_PACKAGES += fs_config_files
@@ -544,7 +546,9 @@ PRODUCT_PACKAGES += \
 
 #eavb fe lib and app
 PRODUCT_PACKAGES += libeavbfe \
-            eavbfe_test
+            eavbfe_test \
+            libqavb_fe_pcm_plugin \
+            tinyalsa_eavbfe
 
 #Boot control HAL test app
 PRODUCT_PACKAGES_DEBUG += bootctl
