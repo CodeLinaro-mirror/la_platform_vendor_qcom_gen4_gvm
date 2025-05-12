@@ -239,7 +239,9 @@ PRODUCT_DEVICE := gen4_gvm
 PRODUCT_BRAND := qti
 PRODUCT_MODEL := gen4_gvm for arm64
 
+ifneq ($(TARGET_AUTO_RBVM), true)
 PRODUCT_SOONG_NAMESPACES += hardware/qcom/wlan/qcwcn
+endif
 
 ###########
 #QMAA flags starts
