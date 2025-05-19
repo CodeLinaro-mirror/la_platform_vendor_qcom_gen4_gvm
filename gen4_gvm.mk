@@ -19,6 +19,10 @@ AUDIO_USE_STUB_HAL := false
 PRODUCT_OTA_ENFORCE_VINTF_KERNEL_REQUIREMENTS := false
 PRODUCT_MANUFACTURER := Qualcomm
 
+#Add soong variable for auto board targets
+$(call add_soong_config_namespace,qti)
+$(call soong_config_set,qti,qti_target_board_auto,true)
+
 ifeq ($(TARGET_SINGLE_TREE), true)
   PRODUCT_PRODUCT_VNDK_VERSION := current
   #TODO(amutyala) to revert once QSSI 15 component created
