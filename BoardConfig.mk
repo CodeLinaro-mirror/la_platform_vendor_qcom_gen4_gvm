@@ -2,6 +2,12 @@
 #
 # Product-specific compile-time definitions.
 #
+
+#We are resetting BOARD_VENDOR_KERNEL_MODULES due to BoardConfig.mk invoked twice
+#   1. From vendor/qcom/proprietary/common/config/device-vendor.mk
+#   2. From build/make/core/board_config.mk
+#which impacts duplicates found in vendor_dlkm partition while building image
+BOARD_VENDOR_KERNEL_MODULES :=
 TARGET_KERNEL_DLKM_DISABLE := true
 
 ifeq ($(filter $(TARGET_BOARD_DERIVATIVE_SUFFIX), _cdcsdv _sdv),)
@@ -211,7 +217,6 @@ ifeq ($(KERNEL_DEFCONFIG),)
 endif
 
 BOARD_DO_NOT_STRIP_VENDOR_MODULES := true
-BOARD_VENDOR_KERNEL_MODULES += $(shell ls $(KERNEL_MODULES_OUT)/*.ko)
 TARGET_USES_ION := true
 TARGET_USES_NEW_ION_API :=true
 TARGET_USES_QCOM_BSP := false
