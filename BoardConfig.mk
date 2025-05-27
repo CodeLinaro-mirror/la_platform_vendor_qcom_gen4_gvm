@@ -2,12 +2,6 @@
 #
 # Product-specific compile-time definitions.
 #
-
-#We are resetting BOARD_VENDOR_KERNEL_MODULES due to BoardConfig.mk invoked twice
-#   1. From vendor/qcom/proprietary/common/config/device-vendor.mk
-#   2. From build/make/core/board_config.mk
-#which impacts duplicates found in vendor_dlkm partition while building image
-BOARD_VENDOR_KERNEL_MODULES :=
 TARGET_KERNEL_DLKM_DISABLE := true
 
 ifeq ($(filter $(TARGET_BOARD_DERIVATIVE_SUFFIX), _cdcsdv _sdv),)
@@ -358,3 +352,8 @@ ENABLE_CAMERA_SERVICE := true
 $(call add_soong_config_namespace,qti)
 $(call soong_config_set,qti,qti_android_version_above_16,true)
 
+#We are sorting BOARD_VENDOR_KERNEL_MODULES due to BoardConfig.mk invoked twice
+#   1. From vendor/qcom/proprietary/common/config/device-vendor.mk
+#   2. From build/make/core/board_config.mk
+#which impacts duplicates found in vendor_dlkm partition while building image
+BOARD_VENDOR_KERNEL_MODULES := $(sort $(BOARD_VENDOR_KERNEL_MODULES))
