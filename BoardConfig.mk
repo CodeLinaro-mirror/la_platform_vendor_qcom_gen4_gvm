@@ -29,6 +29,7 @@ TARGET_USES_IOPHAL := true
 TARGET_SCREEN_DENSITY := 160
 
 BUILD_BROKEN_DUP_RULES := true
+BOARD_RAMDISK_USE_LZ4 := true
 
 BOARD_INCLUDE_DTB_IN_BOOTIMG := true
 
@@ -45,11 +46,9 @@ BOARD_USE_LEGACY_UI := true
 BOARD_BOOT_HEADER_VERSION := 4
 BOARD_MKBOOTIMG_ARGS := --header_version $(BOARD_BOOT_HEADER_VERSION)
 
-ifneq ($(filter $(TARGET_BOARD_DERIVATIVE_SUFFIX), _cdcsdv _sdv),)
 ifeq ($(TARGET_NO_RECOVERY), true)
 BOARD_MOVE_RECOVERY_RESOURCES_TO_VENDOR_BOOT := true
 BOARD_INCLUDE_RECOVERY_RAMDISK_IN_VENDOR_BOOT := true
-endif
 endif
 
 # Specify init boot header version
@@ -219,7 +218,6 @@ TARGET_USES_QCOM_BSP := false
 BOARD_BOOTCONFIG := androidboot.hardware=qcom androidboot.selinux=enforcing androidboot.memcg=1 androidboot.recover_usb=1
 
 BOARD_KERNEL_CMDLINE := debug user_debug=31 loglevel=9 print-fatal-signals=1  init=/init swiotlb=4096  kpti=0 pcie_ports=compat firmware_class.path=/vendor/firmware_mnt/image loop.max_part=7
-
 ifeq ($(TARGET_CONSOLE_ENABLED),true)
 BOARD_KERNEL_CMDLINE += console=hvc0,115200
 BOARD_BOOTCONFIG += androidboot.console=hvc0
