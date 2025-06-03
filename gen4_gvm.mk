@@ -118,7 +118,7 @@ TARGET_USES_AOSP_FOR_WLAN := true
 
 # Disable WLAN for Gunyah hypervisor based GVM .
 ifneq ($(strip $(TARGET_BOARD_DERIVATIVE_SUFFIX)),_gy)
-BOARD_HAS_QCOM_WLAN := false
+BOARD_HAS_QCOM_WLAN := true
 endif
 
 ENABLE_CAR_POWER_MANAGER := true
@@ -308,6 +308,7 @@ TARGET_USES_QMAA_OVERRIDE_WFD     := true
 TARGET_USES_QMAA_OVERRIDE_WLAN    := true
 TARGET_USES_QMAA_OVERRIDE_HSI2S := false
 
+TARGET_KERNEL_DLKM_WLAN_OVERRIDE := true
 TARGET_ENABLE_QSEECOM := true
 #Full QMAA HAL List
 QMAA_HAL_LIST := audio video camera display sensors gps
