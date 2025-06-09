@@ -59,7 +59,7 @@ $(call inherit-product, $(SRC_TARGET_DIR)/product/updatable_apex.mk)
 
 SHIPPING_API_LEVEL := 35
 PRODUCT_SHIPPING_API_LEVEL := $(SHIPPING_API_LEVEL)
-BOARD_SHIPPING_API_LEVEL := 202402
+BOARD_SHIPPING_API_LEVEL := 202404
 
 ALLOW_MISSING_DEPENDENCIES := true
 ENABLE_AB ?= true
@@ -868,6 +868,8 @@ endif
 # Now, Pickup other split product.mk files:
 ###################################################################################
 # TODO: Relocate the system product.mk files pickup into qssi lunch, once it is up.
+ifneq ($(TARGET_AUTO_RBVM), true)
 $(call inherit-product-if-exists, vendor/qcom/defs/product-defs/system/*.mk)
 $(call inherit-product-if-exists, vendor/qcom/defs/product-defs/vendor/*.mk)
+endif
 ###################################################################################
