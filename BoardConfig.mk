@@ -2,7 +2,7 @@
 #
 # Product-specific compile-time definitions.
 #
-TARGET_KERNEL_DLKM_DISABLE := true
+TARGET_KERNEL_DLKM_DISABLE := false
 
 ifeq ($(filter $(TARGET_BOARD_DERIVATIVE_SUFFIX), _cdcsdv _sdv),)
 TARGET_SEPOLICY_DIR := gen4_gvm
