@@ -850,6 +850,10 @@ ifeq ($(TARGET_ENABLE_FASTRPC_TEST), true)
  PRODUCT_PACKAGES_DEBUG += libcalculator_skel
 endif
 
+#Hibernation Script
+PRODUCT_COPY_FILES += device/qcom/gen4_gvm/hiber.sh:$(TARGET_COPY_OUT_VENDOR)/bin/hiber.sh
+PRODUCT_COPY_FILES += device/qcom/gen4_gvm/hiber_restore.sh:$(TARGET_COPY_OUT_VENDOR)/bin/hiber_restore.sh
+
 ###################################################################################
 # This is the End of target.mk file.
 # Now, Pickup other split product.mk files:
