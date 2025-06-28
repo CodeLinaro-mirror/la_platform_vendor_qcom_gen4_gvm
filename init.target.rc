@@ -74,6 +74,11 @@ on early-init && property:ro.boot.audio=audioreach_vio
      setprop ro.hardware.audio.primary "gen4.ar"
      setprop ro.hardware.sound_trigger.primary "gen4.ar"
 
+# Audiolite
+on early-init && property:ro.boot.audio=audiolite
+     setprop ro.hardware.audio.primary "default"
+     setprop ro.hardware.sound_trigger.primary "default"
+
 #on init
     # write /dev/stune/foreground/schedtune.sched_boost_no_override 1
     # write /dev/stune/top-app/schedtune.sched_boost_no_override 1
@@ -144,7 +149,6 @@ on boot
 # Add a cpuset for the camera daemon
 # We want all cores for camera
     mkdir /dev/cpuset/camera-daemon
-    write /dev/cpuset/camera-daemon/cpus 0-3
     write /dev/cpuset/camera-daemon/mems 0
     chown cameraserver cameraserver /dev/cpuset/camera-daemon
     chown cameraserver cameraserver /dev/cpuset/camera-daemon/tasks
@@ -157,6 +161,9 @@ on boot
     # setprop vendor.usb.dpl.inst.name "dpl"
     setprop vendor.usb.qdss.inst.name "qdss_sw"
     setprop sys.usb.configfs 1
+
+on property:ro.soc.model="SA7255P"
+    write /dev/cpuset/top-app/cpus 0-3
 
 on property:ro.boot.usbcontroller=*
     setprop vendor.usb.controller ${ro.boot.usbcontroller}

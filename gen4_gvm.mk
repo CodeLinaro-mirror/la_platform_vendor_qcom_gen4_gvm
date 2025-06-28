@@ -65,7 +65,8 @@ PRODUCT_VENDOR_PROPERTIES += \
 $(call inherit-product, $(SRC_TARGET_DIR)/product/updatable_apex.mk)
 
 SHIPPING_API_LEVEL := 34
-PRODUCT_SHIPPING_API_LEVEL := $(SHIPPING_API_LEVEL)
+BOARD_SHIPPING_API_LEVEL := 34
+PRODUCT_SHIPPING_API_LEVEL := 34
 
 ALLOW_MISSING_DEPENDENCIES := true
 ENABLE_AB ?= true
@@ -234,6 +235,8 @@ PRODUCT_PROPERTY_OVERRIDES  += \
 
 PRODUCT_PROPERTY_OVERRIDES += ro.control_privapp_permissions=enforce
 
+PRODUCT_PROPERTY_OVERRIDES += ro.vendor.asymmetric_support=true
+
 # PRODUCT_PROPERTY_OVERRIDES += \
 #     ro.config.headless=1 \
 #     config.disable_noncore=true \
@@ -304,7 +307,7 @@ TARGET_USES_QMAA_OVERRIDE_TFTP := false
 TARGET_USES_QMAA_OVERRIDE_USB := true
 TARGET_USES_QMAA_OVERRIDE_VIBRATOR := false
 TARGET_USES_QMAA_OVERRIDE_VIDEO   := true
-TARGET_USES_QMAA_OVERRIDE_VPP := false
+TARGET_USES_QMAA_OVERRIDE_VPP := true
 TARGET_USES_QMAA_OVERRIDE_WFD     := true
 TARGET_USES_QMAA_OVERRIDE_WLAN    := true
 
@@ -534,7 +537,9 @@ PRODUCT_PACKAGES += \
 
 #eavb fe lib and app
 PRODUCT_PACKAGES += libeavbfe \
-            eavbfe_test
+            eavbfe_test \
+            libqavb_fe_pcm_plugin \
+            tinyalsa_eavbfe
 
 #Boot control HAL test app
 PRODUCT_PACKAGES_DEBUG += bootctl
@@ -549,6 +554,9 @@ PRODUCT_PACKAGES += android.hardware.health-service.example \
                     android.hardware.thermal-service.example
 
 PRODUCT_PACKAGES += qcar-gsi.avbpubkey
+
+PRODUCT_COPY_FILES += \
+    frameworks/native/data/etc/android.software.managed_users.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.software.managed_users.xml
 
 #add vndservicemanager
 PRODUCT_PACKAGES += vndservicemanager
@@ -645,8 +653,6 @@ PRODUCT_VENDOR_PROPERTIES += media.stagefright.enable-player=true \
                             media.stagefright.enable-qcp=true \
                             media.stagefright.enable-fma2dp=true \
                             media.stagefright.enable-scan=true \
-                            mmp.enable.3g2=true \
-                            media.aac_51_output_enabled=true \
                             mm.enable.smoothstreaming=true
 
 #13631487 is decimal sum of supported codecs in AAL
