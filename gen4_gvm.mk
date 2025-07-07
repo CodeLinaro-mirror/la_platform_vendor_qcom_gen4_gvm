@@ -128,6 +128,9 @@ TARGET_GVMGH_SPECIFIC := false
 # RRO configuration
 TARGET_USES_RRO := true
 
+#Install Fastadas test apps
+INSTALL_FASTADS_TEST_APPS := true
+
 #Enable Userspace Restart
 $(call inherit-product, $(SRC_TARGET_DIR)/product/userspace_reboot.mk)
 
