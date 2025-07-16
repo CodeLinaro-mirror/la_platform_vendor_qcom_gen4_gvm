@@ -350,6 +350,11 @@ ENABLE_CAMERA_SERVICE := true
 $(call add_soong_config_namespace,qti)
 $(call soong_config_set,qti,qti_android_version_above_16,true)
 
+$(call add_soong_config_var,qti,IS_ANDROID_SHIPPING_W)
+ifeq ($(SHIPPING_API_LEVEL),36)
+    $(call soong_config_set,qti,IS_ANDROID_SHIPPING_W,true)
+endif
+
 #We are sorting BOARD_VENDOR_KERNEL_MODULES due to BoardConfig.mk invoked twice
 #   1. From vendor/qcom/proprietary/common/config/device-vendor.mk
 #   2. From build/make/core/board_config.mk
