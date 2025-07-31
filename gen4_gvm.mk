@@ -139,6 +139,10 @@ ifneq ($(TARGET_BOARD_DERIVATIVE_SUFFIX), _microdroid)
   TARGET_HAS_VIRTIO_FASTRPC := false
   TARGET_HAS_HYBRID_FASTRPC := true
   TARGET_ENABLE_FASTRPC_TEST := true
+ifeq ($(TARGET_HAS_VIRTIO_RSM), true)
+# Enable hfastrpc support for rsm if virtio-rsm is available
+  TARGET_HAS_HYBRID_FASTRPC_RSM:= true
+endif
 endif
 
 INSTALL_FASTADS_TEST_APPS := true
