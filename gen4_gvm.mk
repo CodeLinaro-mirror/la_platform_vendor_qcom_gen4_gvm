@@ -582,7 +582,8 @@ PRODUCT_PACKAGES += \
 
 #PRODUCT_PACKAGES += android.hardware.automotive.audiocontrol@1.0-service
 
-PRODUCT_PACKAGES += android.hardware.health-service.example \
+PRODUCT_PACKAGES += android.hardware.health-service.qti \
+                    android.hardware.health-service.qti_recovery \
                     android.hardware.dumpstate-service.example \
                     android.hardware.thermal-service.example
 
