@@ -4,9 +4,7 @@
 #
 TARGET_KERNEL_DLKM_DISABLE := false
 
-ifeq ($(filter $(TARGET_BOARD_DERIVATIVE_SUFFIX), _cdcsdv _sdv),)
 TARGET_SEPOLICY_DIR := gen4_gvm
-endif
 
 TARGET_ARCH := arm64
 TARGET_ARCH_VARIANT := armv8-a
