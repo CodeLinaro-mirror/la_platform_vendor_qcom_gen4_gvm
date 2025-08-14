@@ -46,6 +46,10 @@ BOARD_USE_LEGACY_UI := true
 BOARD_BOOT_HEADER_VERSION := 4
 BOARD_MKBOOTIMG_ARGS := --header_version $(BOARD_BOOT_HEADER_VERSION)
 
+ifeq ($(TARGET_SINGLE_TREE), true)
+    BOARD_SYSTEM_QCOM_GPS_LOC_API_HARDWARE := default
+endif
+
 ifeq ($(TARGET_NO_RECOVERY), true)
 BOARD_MOVE_RECOVERY_RESOURCES_TO_VENDOR_BOOT := true
 BOARD_INCLUDE_RECOVERY_RAMDISK_IN_VENDOR_BOOT := true
@@ -349,6 +353,11 @@ ENABLE_CAMERA_SERVICE := true
 
 $(call add_soong_config_namespace,qti)
 $(call soong_config_set,qti,qti_android_version_above_16,true)
+
+$(call add_soong_config_var,qti,IS_ANDROID_SHIPPING_W)
+ifeq ($(SHIPPING_API_LEVEL),36)
+    $(call soong_config_set,qti,IS_ANDROID_SHIPPING_W,true)
+endif
 
 #We are sorting BOARD_VENDOR_KERNEL_MODULES due to BoardConfig.mk invoked twice
 #   1. From vendor/qcom/proprietary/common/config/device-vendor.mk

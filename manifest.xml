@@ -41,7 +41,7 @@ SPDX-License-Identifier: BSD-3-Clause-Clear
     </hal>
     <hal format="aidl">
         <name>android.hardware.automotive.audiocontrol</name>
-        <version>3</version>
+        <version>5</version>
         <interface>
             <name>IAudioControl</name>
             <instance>default</instance>

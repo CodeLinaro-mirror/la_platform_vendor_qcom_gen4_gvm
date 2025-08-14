@@ -4,7 +4,6 @@ TARGET_BOARD_TYPE := auto
 TARGET_BOARD_SUFFIX := _gvm
 ENABLE_AIDL_VHAL := true
 ENABLE_AIDL_SENSOR := true
-ENABLE_DATA_AUTOMS := true
 # U-BRINGUP disable display
 TARGET_DISABLE_DISPLAY := false 
 TARGET_IS_HEADLESS := false
@@ -307,7 +306,7 @@ TARGET_USES_QMAA_OVERRIDE_VIDEO   := true
 TARGET_USES_QMAA_OVERRIDE_VPP := false
 TARGET_USES_QMAA_OVERRIDE_WFD     := true
 TARGET_USES_QMAA_OVERRIDE_WLAN    := true
-TARGET_USES_QMAA_OVERRIDE_HSI2S := false
+TARGET_USES_QMAA_OVERRIDE_HSI2S := true
 
 TARGET_KERNEL_DLKM_WLAN_OVERRIDE := true
 TARGET_ENABLE_QSEECOM := true
@@ -567,7 +566,9 @@ PRODUCT_PACKAGES += \
 #eavb fe lib and app
 PRODUCT_PACKAGES += libeavbfe \
             eavbfe_test \
-            libqavb_pcm_plugin
+            libqavb_pcm_plugin \
+            libqavb_fe_pcm_plugin \
+            tinyalsa_eavbfe
 
 #Boot control HAL test app
 PRODUCT_PACKAGES_DEBUG += bootctl
@@ -581,7 +582,8 @@ PRODUCT_PACKAGES += \
 
 #PRODUCT_PACKAGES += android.hardware.automotive.audiocontrol@1.0-service
 
-PRODUCT_PACKAGES += android.hardware.health-service.example \
+PRODUCT_PACKAGES += android.hardware.health-service.qti \
+                    android.hardware.health-service.qti_recovery \
                     android.hardware.dumpstate-service.example \
                     android.hardware.thermal-service.example
 
@@ -851,6 +853,9 @@ PRODUCT_VENDOR_PROPERTIES += ro.boot.wificountrycode=us
 # However in Automotive SP, AVRCP(CT) is enabled in Car UI.
 # So the property should be set as false.
 PRODUCT_VENDOR_PROPERTIES += persist.bluetooth.enablenewavrcp=false
+
+#Key derivation in vts kernel encryption tests use legacykdf
+PRODUCT_VENDOR_PROPERTIES += ro.crypto.hw_wrapped_keys.kdf=legacykdf
 
 # Add gsi avb keys
 PRODUCT_PACKAGES += qcar-gsi.avbpubkey
