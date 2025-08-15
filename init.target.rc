@@ -32,6 +32,8 @@
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
 import /vendor/etc/init/hw/init.qti.kernel.rc
+import /vendor/etc/init/gptp_daemon.rc
+import /vendor/etc/init/utc_daemon.rc
 
 on early-init
 #    chown system system /sys/kernel/boot_kpi/kpi_values
@@ -156,8 +158,16 @@ on boot
 # vnw
     write /dev/ptpshm 0
     write /dev/sctptpshm 0
+    write /dev/timeinfo 0
+    write /dev/utcshm 0
     chmod 0660 /dev/ptpshm
     chmod 0660 /dev/sctptpshm
+    chmod 0660 /dev/timeinfo
+    chmod 0660 /dev/utcshm
+    chown system vendor_ptp /dev/timeinfo
+    chown system vendor_ptp /dev/utcshm
+    chown root vendor_ptp /dev/ptpshm
+    chown root vendor_ptp /dev/sctptpshm
 
 #USB controller configuration
     setprop vendor.usb.rndis.func.name "gsi"
