@@ -4,7 +4,6 @@ TARGET_BOARD_TYPE := auto
 TARGET_BOARD_SUFFIX := _gvm
 ENABLE_AIDL_VHAL := true
 ENABLE_AIDL_SENSOR := true
-ENABLE_DATA_AUTOMS := true
 # U-BRINGUP disable display
 TARGET_DISABLE_DISPLAY := false 
 TARGET_IS_HEADLESS := false
@@ -583,7 +582,8 @@ PRODUCT_PACKAGES += \
 
 #PRODUCT_PACKAGES += android.hardware.automotive.audiocontrol@1.0-service
 
-PRODUCT_PACKAGES += android.hardware.health-service.example \
+PRODUCT_PACKAGES += android.hardware.health-service.qti \
+                    android.hardware.health-service.qti_recovery \
                     android.hardware.dumpstate-service.example \
                     android.hardware.thermal-service.example
 
