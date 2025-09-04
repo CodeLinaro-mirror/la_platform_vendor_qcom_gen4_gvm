@@ -41,7 +41,7 @@ on early-init
     write /sys/block/dm-9/queue/read_ahead_kb 4096
     write /sys/block/dm-10/queue/read_ahead_kb 4096
     write /sys/block/dm-11/queue/read_ahead_kb 4096
-    write /proc/sys/kernel/sched_boost 1
+#    write /proc/sys/kernel/sched_boost 1
     symlink /data/tombstones /tombstones
     write /dev/kmsg "boot_kpi: M - INITRC Userspace Start"
 
