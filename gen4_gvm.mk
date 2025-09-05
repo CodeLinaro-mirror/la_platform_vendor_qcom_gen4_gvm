@@ -65,6 +65,9 @@ BOARD_SHIPPING_API_LEVEL := 34
 
 ALLOW_MISSING_DEPENDENCIES := true
 ENABLE_AB ?= true
+
+$(call inherit-product, $(SRC_TARGET_DIR)/product/generic_ramdisk.mk)
+
 # Disable virtual-ab by default
 ifeq ($(ENABLE_AB), true)
   ENABLE_VIRTUAL_AB ?= true
