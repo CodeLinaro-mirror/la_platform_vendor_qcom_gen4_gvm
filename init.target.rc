@@ -176,13 +176,14 @@ on boot && property:persist.vendor.usb.controller.default=*
 on property:vendor.usb.controller=* && property:ro.boot.hwversion=1
     setprop sys.usb.controller ${vendor.usb.controller}
 
-on property:vendor.usb.controller=* && property:ro.boot.hwversion=2 && property:ro.product.name=gen4_gvm_cdccomm
+#hwversion property is applicable to CDC
+on property:vendor.usb.controller=* && property:ro.boot.hwversion=2
     write /sys/devices/platform/soc/a600000.hsusb/mode peripheral
     write /sys/devices/platform/soc/a400000.hsusb/mode host
     setprop vendor.usb.rncdc.bsample.controller ${vendor.usb.controller}
     setprop sys.usb.controller ${vendor.usb.rncdc.bsample.controller}
 
-on property:vendor.usb.controller=* && property:ro.boot.hwversion=3 && property:ro.product.name=gen4_gvm_cdccomm
+on property:vendor.usb.controller=* && property:ro.boot.hwversion=3
     write /sys/devices/platform/soc/a600000.hsusb/mode host
     write /sys/devices/platform/soc/a400000.hsusb/mode peripheral
     setprop vendor.usb.rncdc.dvsample.controller ${vendor.usb.controller}
