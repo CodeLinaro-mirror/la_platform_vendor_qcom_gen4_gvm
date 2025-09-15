@@ -38,7 +38,6 @@ echo "Current hibernation script version is $VERSION"
 echo suspend > /sys/power/disk
 
 echo "overwrite a disk with zeros, before setting the disk to /sys/power/resume"
-dd if=/dev/zero of=/dev/block/swap bs=64M
 
 sda=`ls -l /dev/block/by-name/swap | awk '{print $NF}' | awk -F'[/]' '{print $4}'`
 major=`ls -l /dev/block/${sda} | awk '{print $5}' | grep -o '[0-9]*'`
