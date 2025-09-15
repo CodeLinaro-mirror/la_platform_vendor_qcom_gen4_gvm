@@ -302,6 +302,10 @@ SOONG_CONFIG_NAMESPACES += qtiwifi
 SOONG_CONFIG_qtiwifi += automobile
 SOONG_CONFIG_qtiwifi_automobile := true
 
+#Add soong variable for auto board targets
+$(call add_soong_config_namespace,qti)
+$(call soong_config_set,qti,qti_target_board_auto,true)
+
 #----------------------------------------------------------------------
 # wlan specific
 #----------------------------------------------------------------------
@@ -309,9 +313,12 @@ ifeq ($(strip $(BOARD_HAS_QCOM_WLAN)),true)
 include device/qcom/wlan/msmnile_au/BoardConfigWlan.mk
 endif
 
+
+ifneq ($(PLATFORM_VERSION),$(filter V VanillaIceCream 15, $(PLATFORM_VERSION)))
 #Flag to enable System SDK Requirements.
 #All vendor APK will be compiled against system_current API set.
 BOARD_SYSTEMSDK_VERSIONS:= $(PRODUCT_SHIPPING_API_LEVEL)
+endif
 
 #Enable VNDK Compliance
 BOARD_VNDK_VERSION:=current
@@ -335,6 +342,8 @@ BUILD_BROKEN_USES_BUILD_HOST_EXECUTABLE := true
 BUILD_BROKEN_USES_BUILD_COPY_HEADERS := true
 BUILD_BROKEN_USES_BUILD_HOST_STATIC_LIBRARY := true
 BUILD_BROKEN_CLANG_PROPERTY := true
+ifneq ($(PLATFORM_VERSION),$(filter V VanillaIceCream 15, $(PLATFORM_VERSION)))
 BUILD_BROKEN_USES_SOONG_PYTHON2_MODULES := true
+endif
 #Enable Camera2 APIs on automotive builds
 ENABLE_CAMERA_SERVICE := true
