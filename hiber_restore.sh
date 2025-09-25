@@ -6,3 +6,4 @@
 # Post Restore
 
 swapoff /dev/block/swap
+dd if=/dev/zero of=/dev/block/swap bs=64M count=8

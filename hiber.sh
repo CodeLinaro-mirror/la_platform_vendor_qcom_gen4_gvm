@@ -35,8 +35,9 @@
 VERSION=1.0
 echo "Current hibernation script version is $VERSION"
 
+echo suspend > /sys/power/disk
+
 echo "overwrite a disk with zeros, before setting the disk to /sys/power/resume"
-dd if=/dev/zero of=/dev/block/swap bs=1M
 
 sda=`ls -l /dev/block/by-name/swap | awk '{print $NF}' | awk -F'[/]' '{print $4}'`
 major=`ls -l /dev/block/${sda} | awk '{print $5}' | grep -o '[0-9]*'`
@@ -50,12 +51,8 @@ swapon /dev/block/swap -p 0
 
 echo 100 > /proc/sys/vm/swappiness
 echo 0 > /sys/power/image_size
-echo "UI turn off"
-cat /proc/swaps
 
 sync
-
-echo suspend > /sys/power/disk
 
 #drop cache
 while true
