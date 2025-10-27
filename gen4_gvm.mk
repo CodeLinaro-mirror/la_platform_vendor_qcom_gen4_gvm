@@ -851,6 +851,13 @@ endif
 PRODUCT_COPY_FILES += device/qcom/gen4_gvm/hiber.sh:$(TARGET_COPY_OUT_VENDOR)/bin/hiber.sh
 PRODUCT_COPY_FILES += device/qcom/gen4_gvm/hiber_restore.sh:$(TARGET_COPY_OUT_VENDOR)/bin/hiber_restore.sh
 
+
+ifeq ($(filter $(PLATFORM_VERSION), 15 VanillaIceCream V),$(PLATFORM_VERSION))
+TARGET_SUPPORTS_VM_AUTO := false
+else
+TARGET_SUPPORTS_VM_AUTO := true
+endif
+
 ###################################################################################
 # This is the End of target.mk file.
 # Now, Pickup other split product.mk files:
