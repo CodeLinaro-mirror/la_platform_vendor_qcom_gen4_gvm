@@ -696,23 +696,13 @@ PRODUCT_VENDOR_PROPERTIES += persist.timed.enable=true
 # 196610 is decimal for 0x30002 to report version 3.2
 PRODUCT_VENDOR_PROPERTIES += ro.opengles.version=196610
 
-# system property for maximum number of HFP client connections
-PRODUCT_VENDOR_PROPERTIES += bt.max.hfpclient.connections=1
-
 # system prop to turn on CdmaLTEPhone always
 PRODUCT_VENDOR_PROPERTIES += telephony.lteOnCdmaDevice=1
 
 #Simulate sdcard on /data/media
 PRODUCT_VENDOR_PROPERTIES += persist.fuse_sdcard=true
 
-#system prop for wipower support
-PRODUCT_VENDOR_PROPERTIES += ro.bluetooth.emb_wp_mode=false \
-                            ro.bluetooth.wipower=false
-
-PRODUCT_VENDOR_PROPERTIES += persist.vendor.service.bt.a2dp.sink=true \
-                            persist.vendor.btstack.enable.splita2dp=false \
-                            persist.vendor.service.bdroid.sibs=false \
-                            persist.bt.clock_boottime_alarm=false
+PRODUCT_VENDOR_PROPERTIES += persist.vendor.service.bdroid.sibs=false
 
 # system prop for Hardware type Automotive
 PRODUCT_VENDOR_PROPERTIES += ro.hardware.type=automotive
