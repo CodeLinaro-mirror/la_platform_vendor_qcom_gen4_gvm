@@ -34,6 +34,7 @@ BOARD_RAMDISK_USE_LZ4 := true
 BOARD_INCLUDE_DTB_IN_BOOTIMG := true
 
 -include $(QCPATH)/common/gen4_gvm/BoardConfigVendor.mk
+FORCE_USE_ANDROIDMK_FOR_WPA_CONF := true
 
 # Some framework code requires this to enable BT
 BOARD_HAVE_BLUETOOTH := true
