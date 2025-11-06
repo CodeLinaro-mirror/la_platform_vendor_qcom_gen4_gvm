@@ -856,6 +856,12 @@ ifeq ($(TARGET_ENABLE_FASTRPC_TEST), true)
  PRODUCT_PACKAGES_DEBUG += libcalculator_skel
 endif
 
+AB_OTA_POSTINSTALL_CONFIG += \
+               RUN_POSTINSTALL_vendor=true \
+               FILESYSTEM_TYPE_vendor=ext4 \
+               POSTINSTALL_OPTIONAL_vendor=true
+
+
 ###################################################################################
 # This is the End of target.mk file.
 # Now, Pickup other split product.mk files:
