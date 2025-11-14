@@ -34,8 +34,22 @@
 import /vendor/etc/init/hw/init.qti.kernel.rc
 
 on early-init
+    write /sys/block/dm-6/queue/read_ahead_kb 4096
+    write /sys/block/dm-7/queue/read_ahead_kb 4096
+    write /sys/block/dm-8/queue/read_ahead_kb 4096
+    write /sys/block/dm-9/queue/read_ahead_kb 4096
+    write /sys/block/dm-10/queue/read_ahead_kb 4096
+    write /sys/block/dm-11/queue/read_ahead_kb 4096
+    write /sys/block/vda/queue/read_ahead_kb 4096
+    write /sys/block/vdb/queue/read_ahead_kb 4096
+    write /sys/block/vdc/queue/read_ahead_kb 4096
+    write /sys/block/vdd/queue/read_ahead_kb 4096
+    write /sys/block/vde/queue/read_ahead_kb 4096
+    write /sys/block/vdf/queue/read_ahead_kb 4096
+    write /sys/block/vdg/queue/read_ahead_kb 4096
+    write /sys/block/vdl/queue/read_ahead_kb 4096
     chown system system /sys/kernel/boot_kpi/kpi_values
-    write /proc/sys/kernel/sched_boost 1
+    #write /proc/sys/kernel/sched_boost 1
     symlink /data/tombstones /tombstones
     write /dev/console "boot_kpi: M - INITRC Userspace Start"
     write /sys/kernel/boot_kpi/kpi_values "M - INITRC Userspace Start"
@@ -86,6 +100,7 @@ on fs
 
 on late-fs
     mount_all --late
+    write /sys/block/dm-46/queue/read_ahead_kb 4096
 
 on post-fs
     start vendor.sec_nvm
