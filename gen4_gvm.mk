@@ -663,6 +663,7 @@ endif
 PRODUCT_PACKAGES += ip_vendor \
                     libiprouteutil_vendor
 
+PRODUCT_PACKAGES += idc_data
 # Set network mode to (T/L/G/W/1X/EVDO, T/L/G/W/1X/EVDO) for 7+7 mode device on DSDS mode
 PRODUCT_VENDOR_PROPERTIES += ro.telephony.default_network=22,22 \
                             ro.radio.noril=true
