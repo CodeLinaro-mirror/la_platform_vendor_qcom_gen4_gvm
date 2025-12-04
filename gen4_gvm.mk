@@ -234,7 +234,12 @@ PRODUCT_PROPERTY_OVERRIDES += ro.control_privapp_permissions=enforce
 #     config.disable_noncore=true \
 #     config.disable_systemui=true \
 
-$(call inherit-product, packages/services/Car/car_product/build/car.mk)
+#$(call inherit-product, packages/services/Car/car_product/build/car.mk)
+$(call inherit-product, device/qcom/qssi_au/qssi_au_system_generic.mk)
+$(call inherit-product, packages/services/Car/car_product/build/car_generic_system.mk)
+$(call inherit-product, packages/services/Car/car_product/build/car_system_ext.mk)
+$(call inherit-product, packages/services/Car/car_product/build/car_product.mk)
+
 
 PRODUCT_NAME := gen4_gvm
 PRODUCT_DEVICE := gen4_gvm
@@ -838,8 +843,8 @@ PRODUCT_PACKAGES += qcar-gsi.avbpubkey
 ifeq ($(TARGET_SINGLE_TREE), true)
   # Include mainline components and QSSI whitelist
   ifeq (true,$(call math_gt_or_eq,$(SHIPPING_API_LEVEL),29))
-    $(call inherit-product, device/qcom/qssi_au/qssi_au_whitelist.mk)
-    PRODUCT_ARTIFACT_PATH_REQUIREMENT_IGNORE_PATHS := /system/system_ext/
+    #$(call inherit-product, device/qcom/qssi_au/qssi_au_whitelist.mk)
+    #PRODUCT_ARTIFACT_PATH_REQUIREMENT_IGNORE_PATHS := /system/system_ext/
     PRODUCT_ENFORCE_ARTIFACT_PATH_REQUIREMENTS := false
   endif
 
