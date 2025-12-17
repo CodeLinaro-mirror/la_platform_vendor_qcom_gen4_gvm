@@ -552,7 +552,8 @@ PRODUCT_PACKAGES += \
 
 PRODUCT_PACKAGES += android.hardware.health-service.example \
                     android.hardware.dumpstate-service.example \
-                    android.hardware.thermal-service.example
+                    android.hardware.thermal-service.example \
+                    com.android.hardware.thermal
 
 PRODUCT_PACKAGES += qcar-gsi.avbpubkey
 
@@ -574,6 +575,11 @@ PRODUCT_ENFORCE_RRO_TARGETS := framework-res
 PRODUCT_PACKAGES += libnbaio
 
 PRODUCT_PRODUCT_PROPERTIES += persist.adb.tcp.port=5555
+
+# Enable Car Telemetry
+ENABLE_CARTELEMETRY_SERVICE := true
+PRODUCT_PACKAGES += android.automotive.telemetryd@1.0
+PRODUCT_PACKAGES += ScriptExecutor
 
 ifeq ($(TARGET_SINGLE_TREE), true)
   # Context hub HAL
@@ -650,20 +656,15 @@ PRODUCT_VENDOR_PROPERTIES += media.stagefright.enable-player=true \
                             media.stagefright.enable-aac=true \
                             media.stagefright.enable-qcp=true \
                             media.stagefright.enable-fma2dp=true \
-                            media.stagefright.enable-scan=true \
-                            mm.enable.smoothstreaming=true
+                            media.stagefright.enable-scan=true
 
 #13631487 is decimal sum of supported codecs in AAL
 #codecs:(PARSER_)AAC AC3 AMR_NB AMR_WB ASF AVI DTS FLV 3GP 3G2 MKV MP2PS MP2TS MP3 OGG QCP WAV FLAC AIFF APE DSD MOV XVID
-PRODUCT_VENDOR_PROPERTIES += vendor.mm.enable.qcom_parser=63963135 \
-                            persist.mm.enable.prefetch=true
+PRODUCT_VENDOR_PROPERTIES += vendor.mm.enable.qcom_parser=63963135
 
 # system props for the data modules
 PRODUCT_VENDOR_PROPERTIES += ro.vendor.use_data_netmgrd=true \
                             persist.vendor.data.mode=concurrent
-
-#system props for time-services
-PRODUCT_VENDOR_PROPERTIES += persist.timed.enable=true
 
 # system prop for opengles version
 # 196608 is decimal for 0x30000 to report version 3
@@ -850,6 +851,13 @@ endif
 #Hibernation Script
 PRODUCT_COPY_FILES += device/qcom/gen4_gvm/hiber.sh:$(TARGET_COPY_OUT_VENDOR)/bin/hiber.sh
 PRODUCT_COPY_FILES += device/qcom/gen4_gvm/hiber_restore.sh:$(TARGET_COPY_OUT_VENDOR)/bin/hiber_restore.sh
+
+
+ifeq ($(filter $(PLATFORM_VERSION), 15 VanillaIceCream V),$(PLATFORM_VERSION))
+TARGET_SUPPORTS_VM_AUTO := false
+else
+TARGET_SUPPORTS_VM_AUTO := true
+endif
 
 ###################################################################################
 # This is the End of target.mk file.
