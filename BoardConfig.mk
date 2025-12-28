@@ -145,7 +145,7 @@ ifeq ($(ENABLE_AB), true)
   else
       AB_OTA_PARTITIONS ?= vendor vbmeta vendor_dlkm system_dlkm
      ifeq ($(TARGET_SINGLE_TREE), true)
-      AB_OTA_PARTITIONS ?= vendor vbmeta vendor_dlkm system_dlkm system system_ext product
+      AB_OTA_PARTITIONS := vendor vbmeta vendor_dlkm system_dlkm system system_ext product boot init_boot vendor_boot
      endif
   endif #TARGET_USES_GY
 else
