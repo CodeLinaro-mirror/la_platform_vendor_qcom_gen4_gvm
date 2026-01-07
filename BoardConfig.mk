@@ -357,6 +357,12 @@ ifeq ($(SHIPPING_API_LEVEL),36)
     $(call soong_config_set,qti,IS_ANDROID_SHIPPING_W,true)
 endif
 
+ifneq (,$(filter cp2a next,$(strip $(TARGET_RELEASE_PLATFORM))))
+#Namespace definition for Rust dependencies that come from Android for sec-userspace
+SOONG_CONFIG_NAMESPACES += ssg_rustaceans
+SOONG_CONFIG_ssg_rustaceans += android_shipping_level
+SOONG_CONFIG_ssg_rustaceans_android_shipping_level := android17
+endif
 #We are sorting BOARD_VENDOR_KERNEL_MODULES due to BoardConfig.mk invoked twice
 #   1. From vendor/qcom/proprietary/common/config/device-vendor.mk
 #   2. From build/make/core/board_config.mk
