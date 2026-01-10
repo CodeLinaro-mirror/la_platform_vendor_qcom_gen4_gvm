@@ -422,7 +422,6 @@ PRODUCT_PACKAGES += hsi2s_test
 #vnw apps and daemon
 PRODUCT_PACKAGES += qgptp \
     libgptp.so \
-    gptp_cfg.ini \
     libgptp_test
 
 
