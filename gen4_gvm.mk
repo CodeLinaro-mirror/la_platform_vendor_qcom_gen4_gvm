@@ -24,15 +24,6 @@ PRODUCT_OTA_ENFORCE_VINTF_KERNEL_REQUIREMENTS := false
 PRODUCT_MANUFACTURER := Qualcomm
 
 ifeq ($(TARGET_SINGLE_TREE), true)
-  PRODUCT_PRODUCT_VNDK_VERSION := current
-  #TODO(amutyala) to revert once QSSI 15 component created
-  #This change requires to build super image (QSSI15 + V14)
-  ifeq (,$(filter VanillaIceCream V 35 W Baklava 16, $(PLATFORM_VNDK_VERSION)))
-    PRODUCT_EXTRA_VNDK_VERSIONS := 33
-  else
-    PRODUCT_EXTRA_VNDK_VERSIONS := 33 34
-  endif
-
   PRODUCT_ENFORCE_PRODUCT_PARTITION_INTERFACE := true
 
   # Enable debugfs restrictions
@@ -90,10 +81,7 @@ BOARD_AVB_ENABLE := true
 BOARD_USES_QCNE := false
 TARGET_BOARD_AUTO := true
 TARGET_USES_AOSP := true
-#TODO(amutyala) to revert this once QSSI 15 component created
-ifeq (,$(filter VanillaIceCream V 35 W Baklava 16, $(PLATFORM_VNDK_VERSION)))
-  TARGET_USES_GAS := true
-endif
+TARGET_USES_GAS := true
 TARGET_USES_QCOM_BSP := false
 TARGET_NO_TELEPHONY := true
 TARGET_USES_QTIC := false
@@ -109,10 +97,7 @@ TARGET_FWK_SUPPORTS_AV_VALUEADDS := true
 #TARGET_FWK_SUPPORTS_FULL_VALUEADDS := false
 TARGET_USES_AOSP_FOR_WLAN := true
 
-# Disable WLAN for Gunyah hypervisor based GVM .
-ifneq ($(strip $(TARGET_BOARD_DERIVATIVE_SUFFIX)),_gy)
 BOARD_HAS_QCOM_WLAN := true
-endif
 
 ENABLE_CAR_POWER_MANAGER := true
 VPP_TARGET_USES_SERVICE := NO
@@ -229,12 +214,19 @@ PRODUCT_PROPERTY_OVERRIDES  += \
 
 PRODUCT_PROPERTY_OVERRIDES += ro.control_privapp_permissions=enforce
 
+PRODUCT_PROPERTY_OVERRIDES += ro.vendor.asymmetric_support=true
+
 # PRODUCT_PROPERTY_OVERRIDES += \
 #     ro.config.headless=1 \
 #     config.disable_noncore=true \
 #     config.disable_systemui=true \
 
-$(call inherit-product, packages/services/Car/car_product/build/car.mk)
+#$(call inherit-product, packages/services/Car/car_product/build/car.mk)
+$(call inherit-product, device/qcom/qssi_au/qssi_au_system_generic.mk)
+$(call inherit-product, packages/services/Car/car_product/build/car_generic_system.mk)
+$(call inherit-product, packages/services/Car/car_product/build/car_system_ext.mk)
+$(call inherit-product, packages/services/Car/car_product/build/car_product.mk)
+
 
 PRODUCT_NAME := gen4_gvm
 PRODUCT_DEVICE := gen4_gvm
@@ -520,9 +512,6 @@ PRODUCT_FULL_TREBLE_OVERRIDE := true
 PRODUCT_VENDOR_MOVE_ENABLED := true
 PRODUCT_COMPATIBLE_PROPERTY_OVERRIDE := true
 
-#Enable vndk-sp Libraries
-PRODUCT_PACKAGES += vndk_package
-
 ifeq ($(filter $(TARGET_BOARD_DERIVATIVE_SUFFIX), _cdcsdv _sdv),)
 DEVICE_PACKAGE_OVERLAYS += device/qcom/gen4_gvm/overlay
 endif
@@ -696,23 +685,13 @@ PRODUCT_VENDOR_PROPERTIES += persist.timed.enable=true
 # 196610 is decimal for 0x30002 to report version 3.2
 PRODUCT_VENDOR_PROPERTIES += ro.opengles.version=196610
 
-# system property for maximum number of HFP client connections
-PRODUCT_VENDOR_PROPERTIES += bt.max.hfpclient.connections=1
-
 # system prop to turn on CdmaLTEPhone always
 PRODUCT_VENDOR_PROPERTIES += telephony.lteOnCdmaDevice=1
 
 #Simulate sdcard on /data/media
 PRODUCT_VENDOR_PROPERTIES += persist.fuse_sdcard=true
 
-#system prop for wipower support
-PRODUCT_VENDOR_PROPERTIES += ro.bluetooth.emb_wp_mode=false \
-                            ro.bluetooth.wipower=false
-
-PRODUCT_VENDOR_PROPERTIES += persist.vendor.service.bt.a2dp.sink=true \
-                            persist.vendor.btstack.enable.splita2dp=false \
-                            persist.vendor.service.bdroid.sibs=false \
-                            persist.bt.clock_boottime_alarm=false
+PRODUCT_VENDOR_PROPERTIES += persist.vendor.service.bdroid.sibs=false
 
 # system prop for Hardware type Automotive
 PRODUCT_VENDOR_PROPERTIES += ro.hardware.type=automotive
@@ -813,9 +792,6 @@ PRODUCT_VENDOR_PROPERTIES += ro.lmk.kill_heaviest_task=true \
 #Property to enable scroll pre-obtain view
 PRODUCT_VENDOR_PROPERTIES += ro.vendor.scroll.preobtain.enable=true
 
-#Expose aux camera for below packages
-PRODUCT_VENDOR_PROPERTIES += vendor.camera.aux.packagelist=org.codeaurora.snapcam
-
 #Display mirroring
 PRODUCT_VENDOR_PROPERTIES += vendor.display.builtin_mirroring=true
 
@@ -851,8 +827,8 @@ PRODUCT_PACKAGES += qcar-gsi.avbpubkey
 ifeq ($(TARGET_SINGLE_TREE), true)
   # Include mainline components and QSSI whitelist
   ifeq (true,$(call math_gt_or_eq,$(SHIPPING_API_LEVEL),29))
-    $(call inherit-product, device/qcom/qssi_au/qssi_au_whitelist.mk)
-    PRODUCT_ARTIFACT_PATH_REQUIREMENT_IGNORE_PATHS := /system/system_ext/
+    #$(call inherit-product, device/qcom/qssi_au/qssi_au_whitelist.mk)
+    #PRODUCT_ARTIFACT_PATH_REQUIREMENT_IGNORE_PATHS := /system/system_ext/
     PRODUCT_ENFORCE_ARTIFACT_PATH_REQUIREMENTS := false
   endif
 
@@ -865,6 +841,12 @@ ifeq ($(TARGET_ENABLE_FASTRPC_TEST), true)
  PRODUCT_PACKAGES_DEBUG += libcalculator
  PRODUCT_PACKAGES_DEBUG += libcalculator_skel
 endif
+
+AB_OTA_POSTINSTALL_CONFIG += \
+               RUN_POSTINSTALL_vendor=true \
+               FILESYSTEM_TYPE_vendor=ext4 \
+               POSTINSTALL_OPTIONAL_vendor=true
+
 
 ###################################################################################
 # This is the End of target.mk file.

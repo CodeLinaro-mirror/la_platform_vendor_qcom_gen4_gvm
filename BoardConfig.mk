@@ -34,6 +34,7 @@ BOARD_RAMDISK_USE_LZ4 := true
 BOARD_INCLUDE_DTB_IN_BOOTIMG := true
 
 -include $(QCPATH)/common/gen4_gvm/BoardConfigVendor.mk
+FORCE_USE_ANDROIDMK_FOR_WPA_CONF := true
 
 # Some framework code requires this to enable BT
 BOARD_HAVE_BLUETOOTH := true
@@ -144,7 +145,7 @@ ifeq ($(ENABLE_AB), true)
   else
       AB_OTA_PARTITIONS ?= vendor vbmeta vendor_dlkm system_dlkm
      ifeq ($(TARGET_SINGLE_TREE), true)
-      AB_OTA_PARTITIONS ?= vendor vbmeta vendor_dlkm system_dlkm system system_ext product
+      AB_OTA_PARTITIONS := vendor vbmeta vendor_dlkm system_dlkm system system_ext product boot init_boot vendor_boot
      endif
   endif #TARGET_USES_GY
 else
@@ -213,16 +214,16 @@ ifeq ($(KERNEL_DEFCONFIG),)
     endif
 endif
 
-BOARD_DO_NOT_STRIP_VENDOR_MODULES := true
+BOARD_DO_NOT_STRIP_VENDOR_MODULES := false
 TARGET_USES_ION := true
 TARGET_USES_NEW_ION_API :=true
 TARGET_USES_QCOM_BSP := false
 
 BOARD_BOOTCONFIG := androidboot.hardware=qcom androidboot.selinux=enforcing androidboot.memcg=1 androidboot.recover_usb=1 androidboot.load_modules_parallel=true
 
-BOARD_KERNEL_CMDLINE := debug user_debug=31 loglevel=9 print-fatal-signals=1  init=/init swiotlb=4096  kpti=0 pcie_ports=compat firmware_class.path=/vendor/firmware_mnt/image loop.max_part=7
+BOARD_KERNEL_CMDLINE := user_debug=31 print-fatal-signals=1  init=/init swiotlb=4096  kpti=0 pcie_ports=compat firmware_class.path=/vendor/firmware_mnt/image loop.max_part=7
 ifeq ($(TARGET_CONSOLE_ENABLED),true)
-BOARD_KERNEL_CMDLINE += console=hvc0,115200
+BOARD_KERNEL_CMDLINE += console=hvc0,115200 debug loglevel=9
 BOARD_BOOTCONFIG += androidboot.console=hvc0
 else ifeq ($(TARGET_CONSOLE_ENABLED),false)
 BOARD_KERNEL_CMDLINE += qcom_geni_serial.con_enabled=0
@@ -322,9 +323,6 @@ endif
 #Flag to enable System SDK Requirements.
 #All vendor APK will be compiled against system_current API set.
 #BOARD_SYSTEMSDK_VERSIONS:= $(PRODUCT_SHIPPING_API_LEVEL)
-
-#Enable VNDK Compliance
-BOARD_VNDK_VERSION:=current
 
 #################################################################################
 # This is the End of BoardConfig.mk file.
