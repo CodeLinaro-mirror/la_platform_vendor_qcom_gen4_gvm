@@ -821,6 +821,13 @@ PRODUCT_VENDOR_PROPERTIES += persist.bluetooth.enablenewavrcp=false
 #Key derivation in vts kernel encryption tests use legacykdf
 PRODUCT_VENDOR_PROPERTIES += ro.crypto.hw_wrapped_keys.kdf=legacykdf
 
+# Native service to load modules
+ifneq (,$(filter $(TARGET_BOARD_PLATFORM)$(TARGET_BOARD_SUFFIX), gen4_gvm))
+PRODUCT_VENDOR_PROPERTIES += ro.vendor.qti.load_dlkm.service=native
+PRODUCT_VENDOR_PROPERTIES += ro.vendor.qti.sysdep.modlist=stmmac,stmmac_platform,dwmac-qcom-ethqos,btpower,btpower_new
+PRODUCT_VENDOR_PROPERTIES += ro.vendor.qti.sysdep.wlan.modlist=cfg80211,mac80211,qca_cld3_qca6390,qca_cld3_qca6490,qca_cld3_kiwi_v2,qca_cld3_qcn7605
+endif
+
 # Add gsi avb keys
 PRODUCT_PACKAGES += qcar-gsi.avbpubkey
 
