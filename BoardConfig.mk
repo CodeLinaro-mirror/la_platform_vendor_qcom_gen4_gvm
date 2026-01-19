@@ -329,8 +329,10 @@ endif
 # Now, Pickup other split Board.mk files:
 #################################################################################
 # TODO: Relocate the system Board.mk files pickup into qssi lunch, once it is up.
--include vendor/qcom/defs/board-defs/system/*.mk
--include vendor/qcom/defs/board-defs/vendor/*.mk
+ifeq ($(filter $(TARGET_BOARD_DERIVATIVE_SUFFIX), _qmaa),)
+ -include vendor/qcom/defs/board-defs/system/*.mk
+ -include vendor/qcom/defs/board-defs/vendor/*.mk
+endif
 #################################################################################
 
 ifeq ($(filter $(TARGET_BOARD_DERIVATIVE_SUFFIX), _cdcsdv _sdv),)
