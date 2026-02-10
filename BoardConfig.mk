@@ -4,6 +4,11 @@
 #
 TARGET_KERNEL_DLKM_DISABLE := false
 
+ifeq ($(PLATFORM_VERSION), CinnamonBun)
+# Bypass global flag to make source tree READ-ONLY
+BUILD_BROKEN_SRC_DIR_IS_WRITABLE := true
+endif
+
 ifeq ($(filter $(TARGET_BOARD_DERIVATIVE_SUFFIX), _cdcsdv _sdv),)
 TARGET_SEPOLICY_DIR := gen4_gvm
 endif
