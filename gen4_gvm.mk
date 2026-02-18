@@ -864,7 +864,7 @@ AB_OTA_POSTINSTALL_CONFIG += \
 # Now, Pickup other split product.mk files:
 ###################################################################################
 # TODO: Relocate the system product.mk files pickup into qssi lunch, once it is up.
-ifeq ($(filter $(TARGET_BOARD_DERIVATIVE_SUFFIX), _qmaa),)
+ifeq ($(filter $(TARGET_BOARD_DERIVATIVE_SUFFIX), _qmaa _gy_qmaa),)
 $(call inherit-product-if-exists, vendor/qcom/defs/product-defs/system/*.mk)
 $(call inherit-product-if-exists, vendor/qcom/defs/product-defs/vendor/*.mk)
 endif
