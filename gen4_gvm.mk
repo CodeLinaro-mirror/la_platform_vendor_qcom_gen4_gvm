@@ -129,8 +129,11 @@ TARGET_GVMGH_SPECIFIC := false
 # RRO configuration
 TARGET_USES_RRO := true
 
+# Enable fastrpc driver only for 1st LA GVM in dual LA setup. _microdroid represents
+# 2nd LAGVM where fastrpc is disabled. In primary LA GVM or single LA GVM we enable
+# only hybrid-fastrpc for Gen4.5 targets.
 ifneq ($(TARGET_BOARD_DERIVATIVE_SUFFIX), _microdroid)
-  TARGET_HAS_VIRTIO_FASTRPC := true
+  TARGET_HAS_VIRTIO_FASTRPC := false
   TARGET_HAS_HYBRID_FASTRPC := true
   TARGET_ENABLE_FASTRPC_TEST := true
 endif
