@@ -23,6 +23,10 @@ AUDIO_USE_STUB_HAL := false
 PRODUCT_OTA_ENFORCE_VINTF_KERNEL_REQUIREMENTS := false
 PRODUCT_MANUFACTURER := Qualcomm
 
+ifeq ($(PLATFORM_VERSION), CinnamonBun)
+  TARGET_SOMEIP_ENABLE := false
+endif
+
 ifeq ($(TARGET_SINGLE_TREE), true)
   PRODUCT_ENFORCE_PRODUCT_PARTITION_INTERFACE := true
 
@@ -97,7 +101,9 @@ TARGET_FWK_SUPPORTS_AV_VALUEADDS := true
 #TARGET_FWK_SUPPORTS_FULL_VALUEADDS := false
 TARGET_USES_AOSP_FOR_WLAN := true
 
+ifneq ($(TARGET_BOARD_DERIVATIVE_SUFFIX),_qmaa)
 BOARD_HAS_QCOM_WLAN := true
+endif
 
 ENABLE_CAR_POWER_MANAGER := true
 VPP_TARGET_USES_SERVICE := NO
@@ -467,7 +473,9 @@ PRODUCT_COPY_FILES += \
     device/qcom/gen4_gvm/display_settings.xml:$(TARGET_COPY_OUT_VENDOR)/etc/display_settings.xml
 endif
 
+ifneq ($(TARGET_BOARD_DERIVATIVE_SUFFIX),_qmaa)
 DEVICE_MANIFEST_FILE := device/qcom/gen4_gvm/manifest.xml
+endif
 DEVICE_MATRIX_FILE   := device/qcom/common/compatibility_matrix.xml
 DEVICE_FRAMEWORK_MANIFEST_FILE := device/qcom/gen4_gvm/framework_manifest.xml
 ifeq ($(TARGET_SINGLE_TREE), true)
@@ -860,6 +868,8 @@ AB_OTA_POSTINSTALL_CONFIG += \
 # Now, Pickup other split product.mk files:
 ###################################################################################
 # TODO: Relocate the system product.mk files pickup into qssi lunch, once it is up.
+ifeq ($(filter $(TARGET_BOARD_DERIVATIVE_SUFFIX), _qmaa),)
 $(call inherit-product-if-exists, vendor/qcom/defs/product-defs/system/*.mk)
 $(call inherit-product-if-exists, vendor/qcom/defs/product-defs/vendor/*.mk)
+endif
 ###################################################################################
