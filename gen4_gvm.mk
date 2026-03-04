@@ -142,6 +142,8 @@ ifeq ($(strip $(BOARD_DYNAMIC_PARTITION_ENABLE)),true)
   ifeq ($(ENABLE_AB), true)
     ifeq (true,$(call math_gt_or_eq,$(SHIPPING_API_LEVEL),34))
       PRODUCT_COPY_FILES += device/qcom/gen4_gvm/gen4_fstab_metadata_f2fs/fstab_AB_dynamic_partition_variant.gen4.qti:$(TARGET_COPY_OUT_VENDOR_RAMDISK)/first_stage_ramdisk/fstab.gen4.qcom
+      PRODUCT_COPY_FILES += device/qcom/gen4_gvm/gen4_fstab_metadata_f2fs/fstab_AB_dynamic_partition_variant.gen4.8255.qti:$(TARGET_COPY_OUT_VENDOR_RAMDISK)/first_stage_ramdisk/fstab.gen4.8255.qcom
+      PRODUCT_COPY_FILES += device/qcom/gen4_gvm/gen4_fstab_metadata_f2fs/fstab_AB_dynamic_partition_variant.gen4.7255.qti:$(TARGET_COPY_OUT_VENDOR_RAMDISK)/first_stage_ramdisk/fstab.gen4.7255.qcom
     else
       PRODUCT_COPY_FILES += device/qcom/gen4_gvm/fstab_AB_dynamic_partition_variant.gen4.qti:$(TARGET_COPY_OUT_VENDOR_RAMDISK)/first_stage_ramdisk/fstab.gen4.qcom
     endif
@@ -577,6 +579,8 @@ PRODUCT_PACKAGES += qcar-gsi.avbpubkey
 #add vndservicemanager
 PRODUCT_PACKAGES += vndservicemanager
 PRODUCT_PACKAGES += fstab.gen4.qcom
+PRODUCT_PACKAGES += fstab.gen4.7255.qcom
+PRODUCT_PACKAGES += fstab.gen4.8255.qcom
 
 #add neuralnetworks
 PRODUCT_PACKAGES += android.hardware.neuralnetworks@1.0.vendor \
