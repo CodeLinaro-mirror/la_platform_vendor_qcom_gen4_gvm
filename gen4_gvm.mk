@@ -57,6 +57,9 @@ $(call inherit-product, $(SRC_TARGET_DIR)/product/updatable_apex.mk)
 
 SHIPPING_API_LEVEL := 36
 PRODUCT_SHIPPING_API_LEVEL := $(SHIPPING_API_LEVEL)
+ifeq (,$(filter $(TARGET_BOARD_DERIVATIVE_SUFFIX), _cv))
+   BOARD_SHIPPING_API_LEVEL := 202504
+endif
 
 ALLOW_MISSING_DEPENDENCIES := true
 ENABLE_AB ?= true
