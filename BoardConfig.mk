@@ -4,6 +4,11 @@
 #
 TARGET_KERNEL_DLKM_DISABLE := false
 
+ifeq ($(PLATFORM_VERSION), CinnamonBun)
+# Bypass global flag to make source tree READ-ONLY
+BUILD_BROKEN_SRC_DIR_IS_WRITABLE := true
+endif
+
 ifeq ($(filter $(TARGET_BOARD_DERIVATIVE_SUFFIX), _cdcsdv _sdv),)
 TARGET_SEPOLICY_DIR := gen4_gvm
 endif
@@ -329,8 +334,10 @@ endif
 # Now, Pickup other split Board.mk files:
 #################################################################################
 # TODO: Relocate the system Board.mk files pickup into qssi lunch, once it is up.
--include vendor/qcom/defs/board-defs/system/*.mk
--include vendor/qcom/defs/board-defs/vendor/*.mk
+ifeq ($(filter $(TARGET_BOARD_DERIVATIVE_SUFFIX), _qmaa _gy_qmaa),)
+ -include vendor/qcom/defs/board-defs/system/*.mk
+ -include vendor/qcom/defs/board-defs/vendor/*.mk
+endif
 #################################################################################
 
 ifeq ($(filter $(TARGET_BOARD_DERIVATIVE_SUFFIX), _cdcsdv _sdv),)

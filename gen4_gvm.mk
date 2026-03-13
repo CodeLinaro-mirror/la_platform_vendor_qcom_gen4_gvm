@@ -23,6 +23,10 @@ AUDIO_USE_STUB_HAL := false
 PRODUCT_OTA_ENFORCE_VINTF_KERNEL_REQUIREMENTS := false
 PRODUCT_MANUFACTURER := Qualcomm
 
+ifeq ($(PLATFORM_VERSION), CinnamonBun)
+  TARGET_SOMEIP_ENABLE := false
+endif
+
 ifeq ($(TARGET_SINGLE_TREE), true)
   PRODUCT_ENFORCE_PRODUCT_PARTITION_INTERFACE := true
 
@@ -97,7 +101,9 @@ TARGET_FWK_SUPPORTS_AV_VALUEADDS := true
 #TARGET_FWK_SUPPORTS_FULL_VALUEADDS := false
 TARGET_USES_AOSP_FOR_WLAN := true
 
+ifneq ($(TARGET_BOARD_DERIVATIVE_SUFFIX),_qmaa)
 BOARD_HAS_QCOM_WLAN := true
+endif
 
 ENABLE_CAR_POWER_MANAGER := true
 VPP_TARGET_USES_SERVICE := NO
@@ -136,6 +142,8 @@ ifeq ($(strip $(BOARD_DYNAMIC_PARTITION_ENABLE)),true)
   ifeq ($(ENABLE_AB), true)
     ifeq (true,$(call math_gt_or_eq,$(SHIPPING_API_LEVEL),34))
       PRODUCT_COPY_FILES += device/qcom/gen4_gvm/gen4_fstab_metadata_f2fs/fstab_AB_dynamic_partition_variant.gen4.qti:$(TARGET_COPY_OUT_VENDOR_RAMDISK)/first_stage_ramdisk/fstab.gen4.qcom
+      PRODUCT_COPY_FILES += device/qcom/gen4_gvm/gen4_fstab_metadata_f2fs/fstab_AB_dynamic_partition_variant.gen4.8255.qti:$(TARGET_COPY_OUT_VENDOR_RAMDISK)/first_stage_ramdisk/fstab.gen4.8255.qcom
+      PRODUCT_COPY_FILES += device/qcom/gen4_gvm/gen4_fstab_metadata_f2fs/fstab_AB_dynamic_partition_variant.gen4.7255.qti:$(TARGET_COPY_OUT_VENDOR_RAMDISK)/first_stage_ramdisk/fstab.gen4.7255.qcom
     else
       PRODUCT_COPY_FILES += device/qcom/gen4_gvm/fstab_AB_dynamic_partition_variant.gen4.qti:$(TARGET_COPY_OUT_VENDOR_RAMDISK)/first_stage_ramdisk/fstab.gen4.qcom
     endif
@@ -467,7 +475,9 @@ PRODUCT_COPY_FILES += \
     device/qcom/gen4_gvm/display_settings.xml:$(TARGET_COPY_OUT_VENDOR)/etc/display_settings.xml
 endif
 
+ifneq ($(TARGET_BOARD_DERIVATIVE_SUFFIX),_qmaa)
 DEVICE_MANIFEST_FILE := device/qcom/gen4_gvm/manifest.xml
+endif
 DEVICE_MATRIX_FILE   := device/qcom/common/compatibility_matrix.xml
 DEVICE_FRAMEWORK_MANIFEST_FILE := device/qcom/gen4_gvm/framework_manifest.xml
 ifeq ($(TARGET_SINGLE_TREE), true)
@@ -569,6 +579,8 @@ PRODUCT_PACKAGES += qcar-gsi.avbpubkey
 #add vndservicemanager
 PRODUCT_PACKAGES += vndservicemanager
 PRODUCT_PACKAGES += fstab.gen4.qcom
+PRODUCT_PACKAGES += fstab.gen4.7255.qcom
+PRODUCT_PACKAGES += fstab.gen4.8255.qcom
 
 #add neuralnetworks
 PRODUCT_PACKAGES += android.hardware.neuralnetworks@1.0.vendor \
@@ -821,6 +833,13 @@ PRODUCT_VENDOR_PROPERTIES += persist.bluetooth.enablenewavrcp=false
 #Key derivation in vts kernel encryption tests use legacykdf
 PRODUCT_VENDOR_PROPERTIES += ro.crypto.hw_wrapped_keys.kdf=legacykdf
 
+# Native service to load modules
+ifneq (,$(filter $(TARGET_BOARD_PLATFORM)$(TARGET_BOARD_SUFFIX), gen4_gvm))
+PRODUCT_VENDOR_PROPERTIES += ro.vendor.qti.load_dlkm.service=native
+PRODUCT_VENDOR_PROPERTIES += ro.vendor.qti.sysdep.modlist=stmmac,stmmac_platform,dwmac-qcom-ethqos,btpower,btpower_new
+PRODUCT_VENDOR_PROPERTIES += ro.vendor.qti.sysdep.wlan.modlist=cfg80211,mac80211,qca_cld3_qca6390,qca_cld3_qca6490,qca_cld3_kiwi_v2,qca_cld3_qcn7605
+endif
+
 # Add gsi avb keys
 PRODUCT_PACKAGES += qcar-gsi.avbpubkey
 
@@ -853,6 +872,8 @@ AB_OTA_POSTINSTALL_CONFIG += \
 # Now, Pickup other split product.mk files:
 ###################################################################################
 # TODO: Relocate the system product.mk files pickup into qssi lunch, once it is up.
+ifeq ($(filter $(TARGET_BOARD_DERIVATIVE_SUFFIX), _qmaa _gy_qmaa),)
 $(call inherit-product-if-exists, vendor/qcom/defs/product-defs/system/*.mk)
 $(call inherit-product-if-exists, vendor/qcom/defs/product-defs/vendor/*.mk)
+endif
 ###################################################################################
