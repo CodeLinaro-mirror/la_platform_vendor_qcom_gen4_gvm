@@ -52,7 +52,34 @@ on early-init
     #write /proc/sys/kernel/sched_boost 1
     symlink /data/tombstones /tombstones
     write /dev/console "boot_kpi: M - INITRC Userspace Start"
-    write /sys/kernel/boot_kpi/kpi_values "M - INITRC Userspace Start"
+
+# Updating the symlinks for the new CDC-partitions
+on early-init && property:ro.product.name=gen4_gvm_cdccomm
+    symlink /dev/block/vvmtruststore        /dev/block/by-name/vvmtruststore
+    symlink /dev/block/update               /dev/block/by-name/update
+    symlink /dev/block/ehorizon             /dev/block/by-name/ehorizon
+    symlink /dev/block/factory              /dev/block/by-name/factory
+    symlink /dev/block/persistent-logging   /dev/block/by-name/persistent-logging
+    symlink /dev/block/oem_map              /dev/block/by-name/oem_map
+    symlink /dev/block/oem0                 /dev/block/by-name/oem0
+    symlink /dev/block/oem1                 /dev/block/by-name/oem1
+    symlink /dev/block/diagnostic           /dev/block/by-name/diagnostic
+    symlink /dev/block/confcal_1            /dev/block/by-name/confcal_1
+    symlink /dev/block/confptstatic         /dev/block/by-name/confptstatic
+    symlink /dev/block/persist-alliance     /dev/block/by-name/persist-alliance
+    symlink /dev/block/earlydata            /dev/block/by-name/earlydata
+    symlink /dev/block/oem_a                /dev/block/by-name/oem_a
+    symlink /dev/block/oem_b                /dev/block/by-name/oem_b
+    symlink /dev/block/oemfactorystate      /dev/block/by-name/oemfactorystate
+    symlink /dev/block/confptid             /dev/block/by-name/confptid
+    symlink /dev/block/confraw              /dev/block/by-name/confraw
+    symlink /dev/block/tier1_diagnostic     /dev/block/by-name/tier1_diagnostic
+    symlink /dev/block/confcal_0            /dev/block/by-name/confcal_0
+    symlink /dev/block/oem_ext_a            /dev/block/by-name/oem_ext_a
+    symlink /dev/block/oem_ext_b            /dev/block/by-name/oem_ext_b
+    symlink /dev/block/rbvm_oem0            /dev/block/by-name/rbvm_oem0
+    symlink /dev/block/rbvm_oem1            /dev/block/by-name/rbvm_oem1
+    symlink /dev/block/fvm_confraw          /dev/block/by-name/fvm_confraw
 
 # Elite
 on early-init && property:ro.boot.audio=""
@@ -180,8 +207,21 @@ on property:ro.boot.usbcontroller=*
 on boot && property:persist.vendor.usb.controller.default=*
     setprop vendor.usb.controller ${persist.vendor.usb.controller.default}
 
-on property:vendor.usb.controller=*
+on property:vendor.usb.controller=* && property:ro.boot.hwversion=1
     setprop sys.usb.controller ${vendor.usb.controller}
+
+#hwversion property is applicable to CDC
+on property:vendor.usb.controller=* && property:ro.boot.hwversion=2
+    write /sys/devices/platform/soc/a600000.hsusb/mode peripheral
+    write /sys/devices/platform/soc/a400000.hsusb/mode host
+    setprop vendor.usb.rncdc.bsample.controller ${vendor.usb.controller}
+    setprop sys.usb.controller ${vendor.usb.rncdc.bsample.controller}
+
+on property:vendor.usb.controller=* && property:ro.boot.hwversion=3
+    write /sys/devices/platform/soc/a600000.hsusb/mode host
+    write /sys/devices/platform/soc/a400000.hsusb/mode peripheral
+    setprop vendor.usb.rncdc.dvsample.controller ${vendor.usb.controller}
+    setprop sys.usb.controller ${vendor.usb.rncdc.dvsample.controller}
 
 on property:init.svc.zygote=running
     write /dev/console "boot_kpi:M - USER Zygote Start"
