@@ -318,6 +318,12 @@ SOONG_CONFIG_NAMESPACES += qtiwifi
 SOONG_CONFIG_qtiwifi += automobile
 SOONG_CONFIG_qtiwifi_automobile := true
 
+#namespace definition for hexlp
+#flag to compile hexlp code or not!
+SOONG_CONFIG_NAMESPACES += hexlp_compilation
+SOONG_CONFIG_hexlp_compilation += is_enabled
+SOONG_CONFIG_hexlp_compilation_is_enabled := $(TARGET_USES_QMAA_OVERRIDE_HEXLP)
+
 #----------------------------------------------------------------------
 # wlan specific
 #----------------------------------------------------------------------
