@@ -55,7 +55,7 @@ PRODUCT_PROPERTY_OVERRIDES += \
 # Enable support for APEX updates
 $(call inherit-product, $(SRC_TARGET_DIR)/product/updatable_apex.mk)
 
-SHIPPING_API_LEVEL := 36
+SHIPPING_API_LEVEL := 37
 PRODUCT_SHIPPING_API_LEVEL := $(SHIPPING_API_LEVEL)
 ifeq (,$(filter $(TARGET_BOARD_DERIVATIVE_SUFFIX), _cv))
    BOARD_SHIPPING_API_LEVEL := 202504
