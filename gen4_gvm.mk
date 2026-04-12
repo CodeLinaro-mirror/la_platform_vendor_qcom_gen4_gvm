@@ -433,7 +433,8 @@ PRODUCT_PACKAGES += qgptp \
     libgptp_test \
     utc_ts \
     libutc.so \
-    libutc_test
+    libutc_test \
+    qgptp_powerservice
 
 
 PRODUCT_PACKAGES += fs_config_files
