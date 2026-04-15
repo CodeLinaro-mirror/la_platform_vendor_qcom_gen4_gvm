@@ -4,7 +4,7 @@
 #
 TARGET_KERNEL_DLKM_DISABLE := false
 
-ifeq ($(PLATFORM_VERSION), CinnamonBun)
+ifeq ($(PLATFORM_VERSION), $(filter $(PLATFORM_VERSION),CinnamonBun 17))
 # Bypass global flag to make source tree READ-ONLY
 BUILD_BROKEN_SRC_DIR_IS_WRITABLE := true
 endif
