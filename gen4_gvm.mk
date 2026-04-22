@@ -236,6 +236,8 @@ PRODUCT_PROPERTY_OVERRIDES  += \
 
 PRODUCT_PROPERTY_OVERRIDES += ro.control_privapp_permissions=enforce
 
+PRODUCT_PROPERTY_OVERRIDES += ro.vendor.asymmetric_support=true
+
 # PRODUCT_PROPERTY_OVERRIDES += \
 #     ro.config.headless=1 \
 #     config.disable_noncore=true \
