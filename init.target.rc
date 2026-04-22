@@ -165,6 +165,10 @@ on boot
     start rfs_access
     start wlan_multiko
 
+    write /dev/elf_offsets ""
+    chown system system /dev/elf_offsets
+    start dlog_service
+
     # Create netmgr recovery folder
     mkdir /data/vendor/netmgr/recovery 0700 radio radio
     chmod 0770 /data/vendor/netmgr/recovery
@@ -279,6 +283,12 @@ service audiod /vendor/bin/audiod
     user system
     group system wakelock
     capabilities BLOCK_SUSPEND
+
+service dlog_service /vendor/bin/dlog_service
+    class main
+    user system
+    group system
+    disabled
 
 service vendor.mdm_helper /vendor/bin/mdm_helper
     user system
