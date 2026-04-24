@@ -57,6 +57,9 @@ $(call inherit-product, $(SRC_TARGET_DIR)/product/updatable_apex.mk)
 
 SHIPPING_API_LEVEL := 36
 PRODUCT_SHIPPING_API_LEVEL := $(SHIPPING_API_LEVEL)
+ifeq (,$(filter $(TARGET_BOARD_DERIVATIVE_SUFFIX), _cv))
+   BOARD_SHIPPING_API_LEVEL := 202504
+endif
 
 ALLOW_MISSING_DEPENDENCIES := true
 ENABLE_AB ?= true
@@ -300,6 +303,7 @@ TARGET_USES_QMAA_OVERRIDE_USB := true
 TARGET_USES_QMAA_OVERRIDE_VIBRATOR := false
 TARGET_USES_QMAA_OVERRIDE_VIDEO   := true
 TARGET_USES_QMAA_OVERRIDE_VPP := true
+TARGET_USES_QMAA_OVERRIDE_HEXLP := false
 TARGET_USES_QMAA_OVERRIDE_WFD     := true
 TARGET_USES_QMAA_OVERRIDE_WLAN    := true
 TARGET_USES_QMAA_OVERRIDE_HSI2S := true
@@ -424,7 +428,6 @@ PRODUCT_PACKAGES += hsi2s_test
 #vnw apps and daemon
 PRODUCT_PACKAGES += qgptp \
     libgptp.so \
-    gptp_cfg.ini \
     libgptp_test
 
 
@@ -836,7 +839,7 @@ PRODUCT_VENDOR_PROPERTIES += ro.crypto.hw_wrapped_keys.kdf=legacykdf
 # Native service to load modules
 ifneq (,$(filter $(TARGET_BOARD_PLATFORM)$(TARGET_BOARD_SUFFIX), gen4_gvm))
 PRODUCT_VENDOR_PROPERTIES += ro.vendor.qti.load_dlkm.service=native
-PRODUCT_VENDOR_PROPERTIES += ro.vendor.qti.sysdep.modlist=stmmac,stmmac_platform,dwmac-qcom-ethqos,btpower,btpower_new
+PRODUCT_VENDOR_PROPERTIES += ro.vendor.qti.sysdep.modlist=stmmac,stmmac_platform,dwmac-qcom-eth,btpower,btpower_new
 PRODUCT_VENDOR_PROPERTIES += ro.vendor.qti.sysdep.wlan.modlist=cfg80211,mac80211,qca_cld3_qca6390,qca_cld3_qca6490,qca_cld3_kiwi_v2,qca_cld3_qcn7605
 endif
 

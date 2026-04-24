@@ -318,6 +318,21 @@ SOONG_CONFIG_NAMESPACES += qtiwifi
 SOONG_CONFIG_qtiwifi += automobile
 SOONG_CONFIG_qtiwifi_automobile := true
 
+#namespace definition for hexlp
+#flag to compile hexlp code or not!
+SOONG_CONFIG_NAMESPACES += hexlp_compilation
+SOONG_CONFIG_hexlp_compilation += is_enabled
+SOONG_CONFIG_hexlp_compilation_is_enabled := $(TARGET_USES_QMAA_OVERRIDE_HEXLP)
+
+#----------------------------------------------------------------------
+# namespace definition GPTP specific
+#----------------------------------------------------------------------
+SOONG_CONFIG_NAMESPACES += qtigptp
+SOONG_CONFIG_qtigptp += gen5gvm gen4gvm cdccomm
+SOONG_CONFIG_qtigptp_gen5gvm := false
+SOONG_CONFIG_qtigptp_gen4gvm := true
+SOONG_CONFIG_qtigptp_cdccomm := false
+
 #----------------------------------------------------------------------
 # wlan specific
 #----------------------------------------------------------------------
