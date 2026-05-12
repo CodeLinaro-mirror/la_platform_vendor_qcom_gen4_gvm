@@ -90,6 +90,30 @@ ifeq ($(strip $(BOARD_DYNAMIC_PARTITION_ENABLE)),true)
  endif #ENABLE_AB
  LOCAL_MODULE_PATH  := $(TARGET_OUT_VENDOR_ETC)
  include $(BUILD_PREBUILT)
+
+ include $(CLEAR_VARS)
+ LOCAL_MODULE       := fstab.gen4.8255.qcom
+ LOCAL_MODULE_TAGS  := optional
+ LOCAL_MODULE_CLASS := ETC
+ ifeq ($(ENABLE_AB), true)
+    LOCAL_SRC_FILES := gen4_fstab_metadata_f2fs/fstab_AB_dynamic_partition_variant.gen4.8255.qti
+ else
+    LOCAL_SRC_FILES := gen4_fstab_metadata_f2fs/fstab_non_AB_dynamic_partition_variant.gen4.qti
+ endif
+ LOCAL_MODULE_PATH  := $(TARGET_OUT_VENDOR_ETC)
+ include $(BUILD_PREBUILT)
+
+ include $(CLEAR_VARS)
+ LOCAL_MODULE       := fstab.gen4.7255.qcom
+ LOCAL_MODULE_TAGS  := optional
+ LOCAL_MODULE_CLASS := ETC
+ ifeq ($(ENABLE_AB), true)
+    LOCAL_SRC_FILES := gen4_fstab_metadata_f2fs/fstab_AB_dynamic_partition_variant.gen4.7255.qti
+ else
+    LOCAL_SRC_FILES := gen4_fstab_metadata_f2fs/fstab_non_AB_dynamic_partition_variant.gen4.qti
+ endif
+ LOCAL_MODULE_PATH  := $(TARGET_OUT_VENDOR_ETC)
+ include $(BUILD_PREBUILT)
 else
  include $(CLEAR_VARS)
  LOCAL_MODULE       := fstab.gen4.qcom

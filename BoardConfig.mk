@@ -4,7 +4,7 @@
 #
 TARGET_KERNEL_DLKM_DISABLE := false
 
-ifeq ($(PLATFORM_VERSION), CinnamonBun)
+ifeq ($(PLATFORM_VERSION), $(filter $(PLATFORM_VERSION),CinnamonBun 17))
 # Bypass global flag to make source tree READ-ONLY
 BUILD_BROKEN_SRC_DIR_IS_WRITABLE := true
 endif
@@ -318,6 +318,21 @@ SOONG_CONFIG_NAMESPACES += qtiwifi
 SOONG_CONFIG_qtiwifi += automobile
 SOONG_CONFIG_qtiwifi_automobile := true
 
+#namespace definition for hexlp
+#flag to compile hexlp code or not!
+SOONG_CONFIG_NAMESPACES += hexlp_compilation
+SOONG_CONFIG_hexlp_compilation += is_enabled
+SOONG_CONFIG_hexlp_compilation_is_enabled := $(TARGET_USES_QMAA_OVERRIDE_HEXLP)
+
+#----------------------------------------------------------------------
+# namespace definition GPTP specific
+#----------------------------------------------------------------------
+SOONG_CONFIG_NAMESPACES += qtigptp
+SOONG_CONFIG_qtigptp += gen5gvm gen4gvm cdccomm
+SOONG_CONFIG_qtigptp_gen5gvm := false
+SOONG_CONFIG_qtigptp_gen4gvm := true
+SOONG_CONFIG_qtigptp_cdccomm := false
+
 #----------------------------------------------------------------------
 # wlan specific
 #----------------------------------------------------------------------
@@ -334,7 +349,7 @@ endif
 # Now, Pickup other split Board.mk files:
 #################################################################################
 # TODO: Relocate the system Board.mk files pickup into qssi lunch, once it is up.
-ifeq ($(filter $(TARGET_BOARD_DERIVATIVE_SUFFIX), _qmaa),)
+ifeq ($(filter $(TARGET_BOARD_DERIVATIVE_SUFFIX), _qmaa _gy_qmaa),)
  -include vendor/qcom/defs/board-defs/system/*.mk
  -include vendor/qcom/defs/board-defs/vendor/*.mk
 endif
