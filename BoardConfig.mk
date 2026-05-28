@@ -149,9 +149,12 @@ ifeq ($(ENABLE_AB), true)
       AB_OTA_PARTITIONS ?= vendor vbmeta vendor_dlkm system_dlkm boot init_boot vendor_boot
     endif
   else
-      AB_OTA_PARTITIONS ?= vendor vbmeta vendor_dlkm system_dlkm
+     # For HGY the final OTA package A/B partitions is passed as part of the build.sh for single tree
      ifeq ($(TARGET_SINGLE_TREE), true)
-      AB_OTA_PARTITIONS := vendor vbmeta vendor_dlkm system_dlkm system system_ext product boot init_boot vendor_boot
+      AB_OTA_PARTITIONS ?= vendor vbmeta vendor_dlkm system_dlkm system system_ext product boot init_boot vendor_boot dtbo
+     else
+     # For HGY the final OTA package A/B partitions is passed as part of the build.sh for split tree
+      AB_OTA_PARTITIONS ?= vendor vbmeta vendor_dlkm system_dlkm boot init_boot vendor_boot dtbo
      endif
   endif #TARGET_USES_GY
 else
