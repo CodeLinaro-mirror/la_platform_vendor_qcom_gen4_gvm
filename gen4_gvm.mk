@@ -23,7 +23,7 @@ AUDIO_USE_STUB_HAL := false
 PRODUCT_OTA_ENFORCE_VINTF_KERNEL_REQUIREMENTS := false
 PRODUCT_MANUFACTURER := Qualcomm
 
-ifeq ($(PLATFORM_VERSION), CinnamonBun)
+ifeq ($(PLATFORM_VERSION), $(filter $(PLATFORM_VERSION),CinnamonBun 17))
   TARGET_SOMEIP_ENABLE := false
 endif
 
@@ -363,7 +363,6 @@ ENABLE_MEMTRACK_AIDL_HAL := true
 
 -include $(QCPATH)/common/config/qtic-config.mk
 
-PRODUCT_BOOT_JARS += tcmiface
 
 ifneq ($(TARGET_NO_TELEPHONY), true)
  PRODUCT_BOOT_JARS += telephony-ext
@@ -839,7 +838,8 @@ PRODUCT_VENDOR_PROPERTIES += ro.crypto.hw_wrapped_keys.kdf=legacykdf
 # Native service to load modules
 ifneq (,$(filter $(TARGET_BOARD_PLATFORM)$(TARGET_BOARD_SUFFIX), gen4_gvm))
 PRODUCT_VENDOR_PROPERTIES += ro.vendor.qti.load_dlkm.service=native
-PRODUCT_VENDOR_PROPERTIES += ro.vendor.qti.sysdep.modlist=stmmac,stmmac_platform,dwmac-qcom-eth,btpower,btpower_new
+PRODUCT_VENDOR_PROPERTIES += ro.vendor.qti.sysdep.modlist=btpower,btpower_new,ptp_qcom_tsc_vm
+PRODUCT_VENDOR_PROPERTIES += ro.vendor.qti.sysdep.eth.modlist=stmmac,stmmac_platform,dwmac-qcom-eth,emac-mdio-fe
 PRODUCT_VENDOR_PROPERTIES += ro.vendor.qti.sysdep.wlan.modlist=cfg80211,mac80211,qca_cld3_qca6390,qca_cld3_qca6490,qca_cld3_kiwi_v2,qca_cld3_qcn7605
 endif
 
