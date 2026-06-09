@@ -733,8 +733,9 @@ PRODUCT_VENDOR_PROPERTIES += persist.rmnet.data.enable=true \
                             persist.data.df.iwlan_mux=9 \
                             persist.data.df.dev_name=rmnet_usb0
 
-# property to enable user to access Google WFD settings
-PRODUCT_VENDOR_PROPERTIES += persist.debug.wfd.enable=1
+ifeq ($(TARGET_SINGLE_TREE), true)
+PRODUCT_SYSTEM_PROPERTIES += persist.debug.wfd.enable=1
+endif
 
 # property to choose between virtual/external wfd display
 PRODUCT_VENDOR_PROPERTIES += persist.sys.wfd.virtual=0
@@ -775,6 +776,10 @@ PRODUCT_VENDOR_PROPERTIES += ro.hwui.texture_cache_size=72 \
                             ro.hwui.text_small_cache_height=1024 \
                             ro.hwui.text_large_cache_width=2048 \
                             ro.hwui.text_large_cache_height=1024 \
+
+ifeq ($(TARGET_SINGLE_TREE), true)
+PRODUCT_SYSTEM_PROPERTIES += config.disable_rtt=true
+endif
 
 #Bringup properties
 PRODUCT_VENDOR_PROPERTIES += persist.sys.force_sw_gles=1 \
@@ -829,7 +834,9 @@ PRODUCT_VENDOR_PROPERTIES += ro.boot.wificountrycode=us
 # In Fluoride Bluetooth stack, the default value for the property is true. This is valid with Mobile SP.
 # However in Automotive SP, AVRCP(CT) is enabled in Car UI.
 # So the property should be set as false.
-PRODUCT_VENDOR_PROPERTIES += persist.bluetooth.enablenewavrcp=false
+ifeq ($(TARGET_SINGLE_TREE), true)
+PRODUCT_SYSTEM_PROPERTIES += persist.bluetooth.enablenewavrcp=false
+endif
 
 #Key derivation in vts kernel encryption tests use legacykdf
 PRODUCT_VENDOR_PROPERTIES += ro.crypto.hw_wrapped_keys.kdf=legacykdf
