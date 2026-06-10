@@ -124,7 +124,6 @@ INSTALL_FASTADS_TEST_APPS := true
 $(call inherit-product, $(SRC_TARGET_DIR)/product/userspace_reboot.mk)
 
 ifeq ($(filter $(TARGET_BOARD_DERIVATIVE_SUFFIX), _cdcsdv _microdroid _sdv),)
-  TARGET_HAS_VIRTIO_RSM := true
   TARGET_HAS_VIRTIO_FASTRPC := true
   TARGET_HAS_HYBRID_FASTRPC := true
   TARGET_ENABLE_FASTRPC_TEST := true
