@@ -685,8 +685,6 @@ PRODUCT_VENDOR_PROPERTIES += bt.max.hfpclient.connections=1
 # system prop to turn on CdmaLTEPhone always
 PRODUCT_VENDOR_PROPERTIES += telephony.lteOnCdmaDevice=1
 
-#Simulate sdcard on /data/media
-PRODUCT_VENDOR_PROPERTIES += persist.fuse_sdcard=true
 
 #system prop for wipower support
 PRODUCT_VENDOR_PROPERTIES += ro.bluetooth.emb_wp_mode=false \
