@@ -9,9 +9,8 @@ ifeq ($(PLATFORM_VERSION), $(filter $(PLATFORM_VERSION),CinnamonBun 17))
 BUILD_BROKEN_SRC_DIR_IS_WRITABLE := true
 endif
 
-ifeq ($(filter $(TARGET_BOARD_DERIVATIVE_SUFFIX), _cdcsdv _sdv),)
 TARGET_SEPOLICY_DIR := gen4_gvm
-endif
+
 
 TARGET_ARCH := arm64
 TARGET_ARCH_VARIANT := armv8-a
@@ -358,9 +357,7 @@ ifeq ($(filter $(TARGET_BOARD_DERIVATIVE_SUFFIX), _qmaa _gy_qmaa),)
 endif
 #################################################################################
 
-ifeq ($(filter $(TARGET_BOARD_DERIVATIVE_SUFFIX), _cdcsdv _sdv),)
 include device/qcom/sepolicy_vndr/SEPolicy.mk
-endif
 
 BUILD_BROKEN_NINJA_USES_ENV_VARS := SDCLANG_AE_CONFIG SDCLANG_CONFIG SDCLANG_SA_ENABLED SDCLANG_CONFIG_AOSP
 BUILD_BROKEN_NINJA_USES_ENV_VARS += TEMPORARY_DISABLE_PATH_RESTRICTIONS
