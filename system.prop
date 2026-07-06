@@ -110,8 +110,6 @@ persist.data.df.mux_count=8
 persist.data.df.iwlan_mux=9
 persist.data.df.dev_name=rmnet_usb0
 
-#property to enable user to access Google WFD settings
-persist.debug.wfd.enable=1
 ##property to choose between virtual/external wfd display
 persist.sys.wfd.virtual=0
 
@@ -152,8 +150,6 @@ ro.hwui.text_small_cache_height=1024
 ro.hwui.text_large_cache_width=2048
 ro.hwui.text_large_cache_height=1024
 
-config.disable_rtt=true
-
 #Bringup properties
 persist.sys.force_sw_gles=1
 persist.vendor.radio.atfwd.start=true
@@ -165,13 +161,6 @@ ro.vendor.qti.sys.fw.bg_apps_limit=60
 
 #Enable ZRAM
 ro.vendor.qti.config.zram=true
-
-#IOP properties
-vendor.iop.enable_uxe=1
-vendor.perf.iop_v3.enable=true
-
-#Property to enable perf boosts from System Server
-vendor.perf.gestureflingboost.enable=true
 
 #Enable ULMK properties
 ro.lmk.kill_heaviest_task=true
@@ -209,4 +198,3 @@ ro.boot.wificountrycode=us
 # However in Automotive SP, AVRCP(CT) is enabled in Car UI.
 # So the property should be set as false.
 persist.bluetooth.enablenewavrcp=false
-

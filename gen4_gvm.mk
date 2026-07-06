@@ -124,6 +124,7 @@ INSTALL_FASTADS_TEST_APPS := true
 $(call inherit-product, $(SRC_TARGET_DIR)/product/userspace_reboot.mk)
 
 ifeq ($(filter $(TARGET_BOARD_DERIVATIVE_SUFFIX), _cdcsdv _microdroid _sdv),)
+  TARGET_HAS_VIRTIO_RSM := true
   TARGET_HAS_VIRTIO_FASTRPC := true
   TARGET_HAS_HYBRID_FASTRPC := true
   TARGET_ENABLE_FASTRPC_TEST := true
@@ -732,8 +733,9 @@ PRODUCT_VENDOR_PROPERTIES += persist.rmnet.data.enable=true \
                             persist.data.df.iwlan_mux=9 \
                             persist.data.df.dev_name=rmnet_usb0
 
-# property to enable user to access Google WFD settings
-PRODUCT_VENDOR_PROPERTIES += persist.debug.wfd.enable=1
+ifeq ($(TARGET_SINGLE_TREE), true)
+PRODUCT_SYSTEM_PROPERTIES += persist.debug.wfd.enable=1
+endif
 
 # property to choose between virtual/external wfd display
 PRODUCT_VENDOR_PROPERTIES += persist.sys.wfd.virtual=0
@@ -775,7 +777,9 @@ PRODUCT_VENDOR_PROPERTIES += ro.hwui.texture_cache_size=72 \
                             ro.hwui.text_large_cache_width=2048 \
                             ro.hwui.text_large_cache_height=1024 \
 
-PRODUCT_VENDOR_PROPERTIES += config.disable_rtt=true
+ifeq ($(TARGET_SINGLE_TREE), true)
+PRODUCT_SYSTEM_PROPERTIES += config.disable_rtt=true
+endif
 
 #Bringup properties
 PRODUCT_VENDOR_PROPERTIES += persist.sys.force_sw_gles=1 \
@@ -830,7 +834,9 @@ PRODUCT_VENDOR_PROPERTIES += ro.boot.wificountrycode=us
 # In Fluoride Bluetooth stack, the default value for the property is true. This is valid with Mobile SP.
 # However in Automotive SP, AVRCP(CT) is enabled in Car UI.
 # So the property should be set as false.
-PRODUCT_VENDOR_PROPERTIES += persist.bluetooth.enablenewavrcp=false
+ifeq ($(TARGET_SINGLE_TREE), true)
+PRODUCT_SYSTEM_PROPERTIES += persist.bluetooth.enablenewavrcp=false
+endif
 
 #Key derivation in vts kernel encryption tests use legacykdf
 PRODUCT_VENDOR_PROPERTIES += ro.crypto.hw_wrapped_keys.kdf=legacykdf
@@ -838,7 +844,7 @@ PRODUCT_VENDOR_PROPERTIES += ro.crypto.hw_wrapped_keys.kdf=legacykdf
 # Native service to load modules
 ifneq (,$(filter $(TARGET_BOARD_PLATFORM)$(TARGET_BOARD_SUFFIX), gen4_gvm))
 PRODUCT_VENDOR_PROPERTIES += ro.vendor.qti.load_dlkm.service=native
-PRODUCT_VENDOR_PROPERTIES += ro.vendor.qti.sysdep.modlist=btpower,btpower_new,ptp_qcom_tsc_vm
+PRODUCT_VENDOR_PROPERTIES += ro.vendor.qti.sysdep.modlist=btpower,btpower_new,ptp_qcom_tsc_vm,ptp_virtual
 PRODUCT_VENDOR_PROPERTIES += ro.vendor.qti.sysdep.eth.modlist=stmmac,stmmac_platform,dwmac-qcom-eth,emac-mdio-fe
 PRODUCT_VENDOR_PROPERTIES += ro.vendor.qti.sysdep.wlan.modlist=cfg80211,mac80211,qca_cld3_qca6390,qca_cld3_qca6490,qca_cld3_kiwi_v2,qca_cld3_qcn7605
 endif
