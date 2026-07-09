@@ -451,7 +451,7 @@ endif
 
 # drm_smmu property
 PRODUCT_VENDOR_PROPERTIES += \
-    persist.vendor.drm.smmu=0
+    persist.vendor.drm.smmu=1
 
 # bootctrl property
 PRODUCT_VENDOR_PROPERTIES += \
