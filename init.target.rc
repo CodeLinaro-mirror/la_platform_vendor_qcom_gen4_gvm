@@ -52,6 +52,7 @@ on early-init
     #write /proc/sys/kernel/sched_boost 1
     symlink /data/tombstones /tombstones
     write /dev/console "boot_kpi: M - INITRC Userspace Start"
+    write /sys/kernel/boot_kpi/kpi_values "M - INITRC Userspace Start"
 
 # Updating the symlinks for the new CDC-partitions
 on early-init && property:ro.product.name=gen4_gvm_cdccomm
