@@ -17,6 +17,7 @@ TARGET_DISABLE_LIBVIRTDIAG := true
 TARGET_ENABLE_AIS_CUST := false
 
 TARGET_KERNEL_DLKM_AUDIO_OVERRIDE := true
+TARGET_SCALABLE_UI_ENABLE ?= true
 
 AUDIO_USE_STUB_HAL := false
 # Skip VINTF checks for kernel configs since we do not have kernel source
@@ -243,6 +244,29 @@ $(call inherit-product, packages/services/Car/car_product/build/car_generic_syst
 $(call inherit-product, packages/services/Car/car_product/build/car_system_ext.mk)
 $(call inherit-product, packages/services/Car/car_product/build/car_product.mk)
 
+ifeq (true,$(call math_gt_or_eq,$(PLATFORM_VERSION),17))
+ ifeq ($(TARGET_SINGLE_TREE), true)
+  ifeq ($(TARGET_SCALABLE_UI_ENABLE),true)
+  # Enable Scalable UI (DEWD) for landscape automotive target.
+  # car_dewd_landscape_common.mk adds landscape DEWD packages to product partition.
+  # rro/rro.mk adds CarSystemUIDewdUIRRO (com.android.systemui.rro.dewd) to
+  # system_ext partition - this sets config_enableScalableUI=true in CarSystemUI.
+  $(call inherit-product, packages/services/Car/car_product/dewd/car_dewd_landscape_common.mk)
+  $(call inherit-product, packages/services/Car/car_product/dewd/rro/rro.mk)
+  # Enable user aspect ratio settings for DisplayCompat (Aspect Ratio Settings button).
+  # This allows users to change the aspect ratio of non-resizeable apps on landscape displays.
+  PRODUCT_SYSTEM_PROPERTIES += \
+      persist.device_config.window_manager.enable_app_compat_aspect_ratio_user_settings=true
+  # DEWD layout config for this device.
+  # car.dewd.config.qcom activates the matching RRO:
+  #   threepanel → DewdThreePanelQcomRRO (3-panel landscape layout)
+  #   splitview  → DewdSplitViewQcomRRO  (map + app split layout)
+  # Only ONE mk file should set this property — Android does not support overrides
+  # for PRODUCT_PRODUCT_PROPERTIES (duplicate keys cause build errors).
+  PRODUCT_PRODUCT_PROPERTIES += car.dewd.config.qcom=splitview
+  endif # TARGET_SCALABLE_UI_ENABLE
+ endif # TARGET_SINGLE_TREE
+endif # PLATFORM_VERSION >= 17
 
 PRODUCT_NAME := gen4_gvm
 PRODUCT_DEVICE := gen4_gvm
@@ -880,7 +904,6 @@ AB_OTA_POSTINSTALL_CONFIG += \
                RUN_POSTINSTALL_vendor=true \
                FILESYSTEM_TYPE_vendor=ext4 \
                POSTINSTALL_OPTIONAL_vendor=true
-
 
 ###################################################################################
 # This is the End of target.mk file.
