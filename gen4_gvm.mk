@@ -111,6 +111,7 @@ TARGET_USES_QCOM_MM_AUDIO := true
 TARGET_USES_DLOG := false
 ifeq ($(TARGET_USES_DLOG), true)
 PRODUCT_PACKAGES += dlog_service
+PRODUCT_PROPERTY_OVERRIDES += vendor.dlog_service.enabled=0
 endif
 
 TARGET_GVMGH_SPECIFIC := false
