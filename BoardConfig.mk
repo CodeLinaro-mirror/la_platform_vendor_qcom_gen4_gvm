@@ -373,6 +373,7 @@ ENABLE_CAMERA_SERVICE := true
 
 $(call add_soong_config_namespace,qti)
 $(call soong_config_set,qti,qti_android_version_above_16,true)
+$(call soong_config_set,qti,target_board_auto, $(TARGET_BOARD_AUTO))
 
 $(call add_soong_config_var,qti,IS_ANDROID_SHIPPING_W)
 ifeq ($(SHIPPING_API_LEVEL),36)
