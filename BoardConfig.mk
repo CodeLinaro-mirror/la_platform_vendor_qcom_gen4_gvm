@@ -304,6 +304,19 @@ TARGET_USES_INTERACTION_BOOST := true
 #Enable DRM plugins 64 bit compilation
 TARGET_ENABLE_MEDIADRM_64 := true
 
+#----------------------------------------------------------------------
+#Soong config for AOSAL
+AOSAL_BUILD_WITH_SOONG := false
+$(call soong_config_namespace, qti_aosal)
+$(call soong_config_set_bool, qti_aosal, AOSAL_BUILD_SOONG, false)
+#----------------------------------------------------------------------
+#----------------------------------------------------------------------
+#Soong config for Display Safety
+TARGET_DISPLAY_SAFETY_ENABLED := false
+$(call soong_config_namespace, qti_sdv)
+$(call soong_config_set_bool, qti_sdv, SDV_DISPLAY_SAFETY_ENABLED, false)
+#----------------------------------------------------------------------
+
 #namespace definition for librecovery_updater
 #differentiate legacy 'sg' or 'bsg' framework
 SOONG_CONFIG_NAMESPACES += ufsbsg
