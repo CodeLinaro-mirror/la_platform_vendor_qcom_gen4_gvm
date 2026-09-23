@@ -405,6 +405,15 @@ on property:sys.boot_completed=1
     start fastcv
     start drm_smmu
 
+on property:sys.boot_completed=1 && property:ro.soc.model=SA7255P && property:ro.product.name=gen4_gvm_gy
+    # Offline PVM cluster0 CPUs (CPU0-3) after Android boot is complete.
+    # GVM vCPUs are pinned to cluster1 (CPU4-7); freeing cluster0 reduces
+    # cross-cluster interference and saves power on the PVM side.
+    write /sys/devices/system/cpu/cpu4/online 0
+    write /sys/devices/system/cpu/cpu5/online 0
+    write /sys/devices/system/cpu/cpu6/online 0
+    write /sys/devices/system/cpu/cpu7/online 0
+
 service drm_smmu /vendor/bin/init.drm.smmu.sh
     user media
     group media
@@ -416,4 +425,3 @@ service fastcv /vendor/bin/fastcv.sh
     group media
     disabled
     oneshot
-
