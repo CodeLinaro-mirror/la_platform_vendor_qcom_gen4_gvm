@@ -392,7 +392,7 @@ ifeq ($(SHIPPING_API_LEVEL),36)
     $(call soong_config_set,qti,IS_ANDROID_SHIPPING_W,true)
 endif
 
-ifneq (,$(filter cp2a next,$(strip $(TARGET_RELEASE_PLATFORM))))
+ifneq (,$(filter cp2a cp4a next,$(strip $(TARGET_RELEASE_PLATFORM))))
 #Namespace definition for Rust dependencies that come from Android for sec-userspace
 SOONG_CONFIG_NAMESPACES += ssg_rustaceans
 SOONG_CONFIG_ssg_rustaceans += android_shipping_level
