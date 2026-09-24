@@ -247,6 +247,9 @@ $(call inherit-product, packages/services/Car/car_product/build/car_product.mk)
 ifeq (true,$(call math_gt_or_eq,$(PLATFORM_VERSION),17))
  ifeq ($(TARGET_SINGLE_TREE), true)
   ifeq ($(TARGET_SCALABLE_UI_ENABLE),true)
+    ifeq ($(TARGET_USES_GAS),true)
+      $(call soong_config_set,qcom_dewd,has_gas,true)
+    endif
   # Enable Scalable UI (DEWD) for landscape automotive target.
   # car_dewd_landscape_common.mk adds landscape DEWD packages to product partition.
   # rro/rro.mk adds CarSystemUIDewdUIRRO (com.android.systemui.rro.dewd) to
