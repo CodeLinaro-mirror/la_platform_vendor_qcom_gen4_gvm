@@ -498,12 +498,15 @@ PRODUCT_HOST_PACKAGES += \
 #Healthd packages
 PRODUCT_PACKAGES += \
     libhealthd.msm
-
-# MTMD enablement, for cmu lunch separate the display and input port xml
-ifeq (,$(filter gen4_gvm_cmu, $(TARGET_BOARD_PLATFORM)$(TARGET_BOARD_SUFFIX)$(TARGET_BOARD_DERIVATIVE_SUFFIX)))
+# MTMD enablement: use multi-display config for Android 17+
+ifneq (,$(filter CinnamonBun 17, $(PLATFORM_VERSION)))
 PRODUCT_COPY_FILES += \
-    device/qcom/gen4_gvm/input-port-associations.xml:$(TARGET_COPY_OUT_VENDOR)/etc/input-port-associations.xml \
-    device/qcom/gen4_gvm/display_settings.xml:$(TARGET_COPY_OUT_VENDOR)/etc/display_settings.xml
+    device/qcom/gen4_gvm/multi-display/input-port-associations.xml:$(TARGET_COPY_OUT_VENDOR)/etc/input-port-associations.xml \
+    device/qcom/gen4_gvm/multi-display/display_settings.xml:$(TARGET_COPY_OUT_VENDOR)/etc/display_settings.xml
+else
+PRODUCT_COPY_FILES += \
+     device/qcom/gen4_gvm/input-port-associations.xml:$(TARGET_COPY_OUT_VENDOR)/etc/input-port-associations.xml \
+     device/qcom/gen4_gvm/display_settings.xml:$(TARGET_COPY_OUT_VENDOR)/etc/display_settings.xml
 endif
 
 ifneq ($(TARGET_BOARD_DERIVATIVE_SUFFIX),_qmaa)
@@ -894,6 +897,27 @@ AB_OTA_POSTINSTALL_CONFIG += \
                RUN_POSTINSTALL_vendor=true \
                FILESYSTEM_TYPE_vendor=ext4 \
                POSTINSTALL_OPTIONAL_vendor=true
+
+#MUMD enablement on gen4_gvm instead gen4_gvm_cmu
+ifneq (,$(filter CinnamonBun 17, $(PLATFORM_VERSION)))
+PRODUCT_COPY_FILES += \
+    frameworks/native/data/etc/android.software.managed_users.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.software.managed_users.xml
+
+#IDC files for touch to wakeup function
+PRODUCT_COPY_FILES += \
+    device/qcom/gen4_gvm/multi-display/input/Vendor_0eef_Product_0210.idc:$(TARGET_COPY_OUT_VENDOR)/usr/idc/Vendor_0eef_Product_0210.idc \
+    device/qcom/gen4_gvm/multi-display/input/Vendor_0eef_Product_c000.idc:$(TARGET_COPY_OUT_VENDOR)/usr/idc/Vendor_0eef_Product_c000.idc \
+
+PRODUCT_PACKAGES += CarFrameworkResOverlayMultiDisplayRRO \
+    CarServiceOverlayMultiDisplayRRO
+
+# Enable MZ audio by default
+PRODUCT_SYSTEM_DEFAULT_PROPERTIES += \
+    persist.sys.max_profiles=5
+
+# enables the rro package for passenger(secondary) user.
+ENABLE_PASSENGER_SYSTEMUI_RRO := true
+endif
 
 ###################################################################################
 # This is the End of target.mk file.

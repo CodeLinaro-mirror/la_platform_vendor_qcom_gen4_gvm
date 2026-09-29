@@ -337,7 +337,11 @@ SOONG_CONFIG_qtiwifi_automobile := true
 #flag to compile hexlp code or not!
 SOONG_CONFIG_NAMESPACES += hexlp_compilation
 SOONG_CONFIG_hexlp_compilation += is_enabled
+ifeq ($(PLATFORM_VERSION), $(filter $(PLATFORM_VERSION),CinnamonBun 17))
+SOONG_CONFIG_hexlp_compilation_is_enabled := false
+else
 SOONG_CONFIG_hexlp_compilation_is_enabled := $(TARGET_USES_QMAA_OVERRIDE_HEXLP)
+endif
 
 #----------------------------------------------------------------------
 # namespace definition GPTP specific
@@ -386,18 +390,20 @@ ENABLE_CAMERA_SERVICE := true
 
 $(call add_soong_config_namespace,qti)
 $(call soong_config_set,qti,qti_android_version_above_16,true)
+$(call soong_config_set,qti,target_board_auto, $(TARGET_BOARD_AUTO))
 
 $(call add_soong_config_var,qti,IS_ANDROID_SHIPPING_W)
 ifeq ($(SHIPPING_API_LEVEL),36)
     $(call soong_config_set,qti,IS_ANDROID_SHIPPING_W,true)
 endif
 
-ifneq (,$(filter cp2a next,$(strip $(TARGET_RELEASE_PLATFORM))))
+ifneq (,$(filter CinnamonBun 17,$(PLATFORM_VERSION)))
 #Namespace definition for Rust dependencies that come from Android for sec-userspace
 SOONG_CONFIG_NAMESPACES += ssg_rustaceans
 SOONG_CONFIG_ssg_rustaceans += android_shipping_level
 SOONG_CONFIG_ssg_rustaceans_android_shipping_level := android17
 endif
+
 #We are sorting BOARD_VENDOR_KERNEL_MODULES due to BoardConfig.mk invoked twice
 #   1. From vendor/qcom/proprietary/common/config/device-vendor.mk
 #   2. From build/make/core/board_config.mk

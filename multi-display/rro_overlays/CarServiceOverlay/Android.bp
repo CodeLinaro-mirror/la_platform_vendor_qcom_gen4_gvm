@@ -1,0 +1,9 @@
+runtime_resource_overlay {
+    name: "CarServiceOverlayMultiDisplayRRO",
+    resource_dirs: ["res"],
+    manifest: "AndroidManifest.xml",
+    sdk_version: "current",
+    soc_specific: true
+}
+
+

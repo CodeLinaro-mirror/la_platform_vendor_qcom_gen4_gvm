@@ -145,6 +145,8 @@ endif
 #----------------------------------------------------------------------
 include device/qcom/common/generate_extra_images.mk
 
+include vendor/qcom/proprietary/vnw/dlog/tools/generate_elf_offset_dlog.mk
+
 include vendor/qcom/opensource/core-utils/build/AndroidBoardCommon.mk
 
 #----------------------------------------------------------------------
