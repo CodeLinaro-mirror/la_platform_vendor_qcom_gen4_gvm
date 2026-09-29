@@ -498,12 +498,15 @@ PRODUCT_HOST_PACKAGES += \
 #Healthd packages
 PRODUCT_PACKAGES += \
     libhealthd.msm
-
-# MTMD enablement, for cmu lunch separate the display and input port xml
-ifeq (,$(filter gen4_gvm_cmu, $(TARGET_BOARD_PLATFORM)$(TARGET_BOARD_SUFFIX)$(TARGET_BOARD_DERIVATIVE_SUFFIX)))
+# MTMD enablement: use multi-display config for Android 17+
+ifneq (,$(filter CinnamonBun 17, $(PLATFORM_VERSION)))
 PRODUCT_COPY_FILES += \
-    device/qcom/gen4_gvm/input-port-associations.xml:$(TARGET_COPY_OUT_VENDOR)/etc/input-port-associations.xml \
-    device/qcom/gen4_gvm/display_settings.xml:$(TARGET_COPY_OUT_VENDOR)/etc/display_settings.xml
+    device/qcom/gen4_gvm/multi-display/input-port-associations.xml:$(TARGET_COPY_OUT_VENDOR)/etc/input-port-associations.xml \
+    device/qcom/gen4_gvm/multi-display/display_settings.xml:$(TARGET_COPY_OUT_VENDOR)/etc/display_settings.xml
+else
+PRODUCT_COPY_FILES += \
+     device/qcom/gen4_gvm/input-port-associations.xml:$(TARGET_COPY_OUT_VENDOR)/etc/input-port-associations.xml \
+     device/qcom/gen4_gvm/display_settings.xml:$(TARGET_COPY_OUT_VENDOR)/etc/display_settings.xml
 endif
 
 ifneq ($(TARGET_BOARD_DERIVATIVE_SUFFIX),_qmaa)
@@ -708,21 +711,14 @@ PRODUCT_VENDOR_PROPERTIES += media.stagefright.enable-player=true \
                             media.stagefright.enable-qcp=true \
                             media.stagefright.enable-fma2dp=true \
                             media.stagefright.enable-scan=true \
-                            mmp.enable.3g2=true \
-                            media.aac_51_output_enabled=true \
-                            mm.enable.smoothstreaming=true
 
 #13631487 is decimal sum of supported codecs in AAL
 #codecs:(PARSER_)AAC AC3 AMR_NB AMR_WB ASF AVI DTS FLV 3GP 3G2 MKV MP2PS MP2TS MP3 OGG QCP WAV FLAC AIFF APE DSD MOV XVID
 PRODUCT_VENDOR_PROPERTIES += vendor.mm.enable.qcom_parser=63963135 \
-                            persist.mm.enable.prefetch=true
 
 # system props for the data modules
 PRODUCT_VENDOR_PROPERTIES += ro.vendor.use_data_netmgrd=true \
                             persist.vendor.data.mode=concurrent
-
-#system props for time-services
-PRODUCT_VENDOR_PROPERTIES += persist.timed.enable=true
 
 # system prop for opengles version
 # 196608 is decimal for 0x30000 to report version 3
@@ -732,9 +728,6 @@ PRODUCT_VENDOR_PROPERTIES += ro.opengles.version=196610
 
 # system prop to turn on CdmaLTEPhone always
 PRODUCT_VENDOR_PROPERTIES += telephony.lteOnCdmaDevice=1
-
-#Simulate sdcard on /data/media
-PRODUCT_VENDOR_PROPERTIES += persist.fuse_sdcard=true
 
 PRODUCT_VENDOR_PROPERTIES += persist.vendor.service.bdroid.sibs=false
 
@@ -904,6 +897,27 @@ AB_OTA_POSTINSTALL_CONFIG += \
                RUN_POSTINSTALL_vendor=true \
                FILESYSTEM_TYPE_vendor=ext4 \
                POSTINSTALL_OPTIONAL_vendor=true
+
+#MUMD enablement on gen4_gvm instead gen4_gvm_cmu
+ifneq (,$(filter CinnamonBun 17, $(PLATFORM_VERSION)))
+PRODUCT_COPY_FILES += \
+    frameworks/native/data/etc/android.software.managed_users.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.software.managed_users.xml
+
+#IDC files for touch to wakeup function
+PRODUCT_COPY_FILES += \
+    device/qcom/gen4_gvm/multi-display/input/Vendor_0eef_Product_0210.idc:$(TARGET_COPY_OUT_VENDOR)/usr/idc/Vendor_0eef_Product_0210.idc \
+    device/qcom/gen4_gvm/multi-display/input/Vendor_0eef_Product_c000.idc:$(TARGET_COPY_OUT_VENDOR)/usr/idc/Vendor_0eef_Product_c000.idc \
+
+PRODUCT_PACKAGES += CarFrameworkResOverlayMultiDisplayRRO \
+    CarServiceOverlayMultiDisplayRRO
+
+# Enable MZ audio by default
+PRODUCT_SYSTEM_DEFAULT_PROPERTIES += \
+    persist.sys.max_profiles=5
+
+# enables the rro package for passenger(secondary) user.
+ENABLE_PASSENGER_SYSTEMUI_RRO := true
+endif
 
 ###################################################################################
 # This is the End of target.mk file.

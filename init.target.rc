@@ -34,6 +34,13 @@
 import /vendor/etc/init/hw/init.qti.kernel.rc
 
 on early-init
+    write /dev/console "boot_kpi: M - INITRC Userspace Start"
+    write /sys/kernel/boot_kpi/kpi_values "M - INITRC Userspace Start"
+    setprop vendor.hgy7255.enabled 0
+
+on property:ro.soc.model=SA7255P && property:ro.product.name=gen4_gvm_gy
+    setprop vendor.hgy7255.enabled 1
+
     write /sys/block/dm-6/queue/read_ahead_kb 4096
     write /sys/block/dm-7/queue/read_ahead_kb 4096
     write /sys/block/dm-8/queue/read_ahead_kb 4096
@@ -51,8 +58,6 @@ on early-init
     chown system system /sys/kernel/boot_kpi/kpi_values
     #write /proc/sys/kernel/sched_boost 1
     symlink /data/tombstones /tombstones
-    write /dev/console "boot_kpi: M - INITRC Userspace Start"
-    write /sys/kernel/boot_kpi/kpi_values "M - INITRC Userspace Start"
 
 # Updating the symlinks for the new CDC-partitions
 on early-init && property:ro.product.name=gen4_gvm_cdccomm
@@ -122,6 +127,10 @@ on init
     write /dev/stune/top-app/schedtune.colocate 1
     write /sys/module/qpnp_rtc/parameters/poweron_alarm 1
 
+on property:vendor.hgy7255.enabled=1
+    write /dev/cpuctl/foreground/cpu.uclamp.min 100
+    write /dev/cpuctl/top-app/cpu.uclamp.min 100
+
 on init && property:vendor.dlog_service.enabled=0
     trigger dlog_init
 
@@ -168,6 +177,8 @@ on late-fs
 
 on post-fs
     start vendor.sec_nvm
+
+on post-fs && property:vendor.hgy7255.enabled=0
     write /dev/cpuctl/foreground/cpu.uclamp.min 50
 
 on post-fs-data
@@ -187,9 +198,9 @@ on post-fs-data
 # Silver Only configuration cannot work with 0-7
 on boot
     chown system system /sys/kernel/hbtp/display_pwr
-    start rmt_storage
     start rfs_access
     start wlan_multiko
+    start rmt_storage
 
     # Create netmgr recovery folder
     mkdir /data/vendor/netmgr/recovery 0700 radio radio
@@ -198,6 +209,13 @@ on boot
     chown radio radio /data/vendor/netmgr/recovery/recovery_info
 
     #update cpusets for background tasks on gvm
+
+on boot && property:vendor.hgy7255.enabled=1
+    write /dev/cpuset/background/cpus 0-3
+    write /dev/cpuset/system-background/cpus 0-3
+    write /dev/cpuset/foreground/cpus 1-3
+
+on boot && property:vendor.hgy7255.enabled=0
     write /dev/cpuset/background/cpus 4-7
     write /dev/cpuset/system-background/cpus 4-7
 
@@ -226,6 +244,9 @@ on boot
 
 on property:ro.soc.model="SA7255P"
     write /dev/cpuset/top-app/cpus 0-3
+
+on property:vendor.hgy7255.enabled=1
+    write /dev/cpuset/top-app/cpus 1-3
 
 on property:ro.boot.usbcontroller=*
     setprop vendor.usb.controller ${ro.boot.usbcontroller}
@@ -272,9 +293,28 @@ on property:sys.boot_completed=1
     write /dev/console "boot_kpi: K - USER Android Boot Complete"
     write /sys/kernel/boot_kpi/kpi_values "K - USER Android Boot Complete"
 
+on property:sys.boot_completed=1 && property:vendor.hgy7255.enabled=1
+    # bootkpi: rmt_storage not needed before boot_completed on gen4_gvm (no modem).
+    write /dev/cpuctl/foreground/cpu.uclamp.min 50
+    write /dev/cpuctl/top-app/cpu.uclamp.min 50
+
 on property:init.svc.surfaceflinger=running
     write /dev/console "boot_kpi: M - USER SurfaceFlinger Start"
     write /sys/kernel/boot_kpi/kpi_values "M - USER SurfaceFlinger Start"
+
+on property:init.svc.surfaceflinger=running && property:vendor.hgy7255.enabled=1
+    # --- Restore full 8-core topology and steady-state cpuset layout now
+    # that boot is done. Bring cpu4-7 back online first, then re-point
+    # background/system-background at them and release the CPU0/top-app
+    # IRQ-isolation restriction -- matches the original baseline ranges.
+    write /sys/devices/system/cpu/cpu4/online 1
+    write /sys/devices/system/cpu/cpu5/online 1
+    write /sys/devices/system/cpu/cpu6/online 1
+    write /sys/devices/system/cpu/cpu7/online 1
+    write /dev/cpuset/background/cpus 4-7
+    write /dev/cpuset/system-background/cpus 4-7
+    write /dev/cpuset/foreground/cpus 0-3
+    write /dev/cpuset/top-app/cpus 0-3
 
 on property:vendor.all.modules.ready=1
     write /dev/console "boot_kpi: M - Vendor Modprobe completed"
@@ -365,6 +405,15 @@ on property:sys.boot_completed=1
     start fastcv
     start drm_smmu
 
+on property:sys.boot_completed=1 && property:ro.soc.model=SA7255P && property:ro.product.name=gen4_gvm_gy
+    # Offline PVM cluster0 CPUs (CPU0-3) after Android boot is complete.
+    # GVM vCPUs are pinned to cluster1 (CPU4-7); freeing cluster0 reduces
+    # cross-cluster interference and saves power on the PVM side.
+    write /sys/devices/system/cpu/cpu4/online 0
+    write /sys/devices/system/cpu/cpu5/online 0
+    write /sys/devices/system/cpu/cpu6/online 0
+    write /sys/devices/system/cpu/cpu7/online 0
+
 service drm_smmu /vendor/bin/init.drm.smmu.sh
     user media
     group media
@@ -376,4 +425,3 @@ service fastcv /vendor/bin/fastcv.sh
     group media
     disabled
     oneshot
-
