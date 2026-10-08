@@ -737,13 +737,17 @@ PRODUCT_VENDOR_PROPERTIES += ro.hardware.type=automotive
 PRODUCT_VENDOR_PROPERTIES += ro.hardware.sensors=gen4.asm_auto
 
 # snapdragon value add features
-PRODUCT_VENDOR_PROPERTIES += ro.qc.sdk.audio.ssr=false
+# Removed ro.qc.sdk.audio.ssr — no SELinux property_contexts
+# entry in Android 15; falls to default_prop (system_internal_prop) which
+# vendor_init cannot set. SSR (Subsystem Restart) audio feature unused on FVM.
 
 # fluencetype can be "fluence" or "fluencepro" or "none"
-PRODUCT_VENDOR_PROPERTIES += ro.qc.sdk.audio.fluencetype=none \
-                            persist.audio.fluence.voicecall=true \
-                            persist.audio.fluence.voicerec=false \
-                            persist.audio.fluence.speaker=true
+# Removed ro.qc.sdk.audio.fluencetype — no SELinux
+# property_contexts entry; falls to default_prop, vendor_init blocked.
+# Removed persist.audio.fluence.voicecall, persist.audio.fluence.voicerec,
+# persist.audio.fluence.speaker — typed as audio_prop in Android 15 which
+# is system_public_prop; vendor_init neverallow prevents setting it.
+# Fluence noise-cancellation is unused on FVM (no telephony voice calls).
 
 # system prop for RmNet Data
 PRODUCT_VENDOR_PROPERTIES += persist.rmnet.data.enable=true \
