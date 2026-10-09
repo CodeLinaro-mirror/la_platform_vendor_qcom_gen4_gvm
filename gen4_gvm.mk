@@ -783,9 +783,6 @@ PRODUCT_VENDOR_PROPERTIES += audio.offload.gapless.enabled=true
 # initialize QCA1530 detection
 PRODUCT_VENDOR_PROPERTIES += sys.qca1530=detect
 
-# Enable stm events
-PRODUCT_VENDOR_PROPERTIES += persist.debug.coresight.config=stm-events
-
 # hwui properties
 PRODUCT_VENDOR_PROPERTIES += ro.hwui.texture_cache_size=72 \
                             ro.hwui.layer_cache_size=48 \
