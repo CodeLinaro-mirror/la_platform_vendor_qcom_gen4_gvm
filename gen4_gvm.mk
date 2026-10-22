@@ -126,7 +126,7 @@ INSTALL_FASTADS_TEST_APPS := true
 #Enable Userspace Restart
 $(call inherit-product, $(SRC_TARGET_DIR)/product/userspace_reboot.mk)
 
-ifeq ($(filter $(TARGET_BOARD_DERIVATIVE_SUFFIX), _cdcsdv _microdroid _sdv),)
+ifeq ($(filter $(TARGET_BOARD_DERIVATIVE_SUFFIX), _cdcsdv _microdroid),)
   TARGET_HAS_VIRTIO_RSM := true
   TARGET_HAS_VIRTIO_FASTRPC := true
   TARGET_HAS_HYBRID_FASTRPC := true
@@ -148,11 +148,9 @@ ifeq ($(strip $(BOARD_DYNAMIC_PARTITION_ENABLE)),true)
 
   ifeq ($(ENABLE_AB), true)
     ifeq (true,$(call math_gt_or_eq,$(SHIPPING_API_LEVEL),34))
-      ifneq ($(TARGET_SDV_ENABLED), true)
-        PRODUCT_COPY_FILES += device/qcom/gen4_gvm/gen4_fstab_metadata_f2fs/fstab_AB_dynamic_partition_variant.gen4.qti:$(TARGET_COPY_OUT_VENDOR_RAMDISK)/first_stage_ramdisk/fstab.gen4.qcom
-        PRODUCT_COPY_FILES += device/qcom/gen4_gvm/gen4_fstab_metadata_f2fs/fstab_AB_dynamic_partition_variant.gen4.8255.qti:$(TARGET_COPY_OUT_VENDOR_RAMDISK)/first_stage_ramdisk/fstab.gen4.8255.qcom
-        PRODUCT_COPY_FILES += device/qcom/gen4_gvm/gen4_fstab_metadata_f2fs/fstab_AB_dynamic_partition_variant.gen4.7255.qti:$(TARGET_COPY_OUT_VENDOR_RAMDISK)/first_stage_ramdisk/fstab.gen4.7255.qcom
-      endif
+      PRODUCT_COPY_FILES += device/qcom/gen4_gvm/gen4_fstab_metadata_f2fs/fstab_AB_dynamic_partition_variant.gen4.qti:$(TARGET_COPY_OUT_VENDOR_RAMDISK)/first_stage_ramdisk/fstab.gen4.qcom
+      PRODUCT_COPY_FILES += device/qcom/gen4_gvm/gen4_fstab_metadata_f2fs/fstab_AB_dynamic_partition_variant.gen4.8255.qti:$(TARGET_COPY_OUT_VENDOR_RAMDISK)/first_stage_ramdisk/fstab.gen4.8255.qcom
+      PRODUCT_COPY_FILES += device/qcom/gen4_gvm/gen4_fstab_metadata_f2fs/fstab_AB_dynamic_partition_variant.gen4.7255.qti:$(TARGET_COPY_OUT_VENDOR_RAMDISK)/first_stage_ramdisk/fstab.gen4.7255.qcom
     else
       PRODUCT_COPY_FILES += device/qcom/gen4_gvm/fstab_AB_dynamic_partition_variant.gen4.qti:$(TARGET_COPY_OUT_VENDOR_RAMDISK)/first_stage_ramdisk/fstab.gen4.qcom
     endif
@@ -247,6 +245,9 @@ $(call inherit-product, packages/services/Car/car_product/build/car_product.mk)
 ifeq (true,$(call math_gt_or_eq,$(PLATFORM_VERSION),17))
  ifeq ($(TARGET_SINGLE_TREE), true)
   ifeq ($(TARGET_SCALABLE_UI_ENABLE),true)
+    ifeq ($(TARGET_USES_GAS),true)
+      $(call soong_config_set,qcom_dewd,has_gas,true)
+    endif
   # Enable Scalable UI (DEWD) for landscape automotive target.
   # car_dewd_landscape_common.mk adds landscape DEWD packages to product partition.
   # rro/rro.mk adds CarSystemUIDewdUIRRO (com.android.systemui.rro.dewd) to
@@ -463,7 +464,7 @@ PRODUCT_PACKAGES += fs_config_files
 
 #A/B related packages
 
-ifeq ($(filter $(TARGET_BOARD_DERIVATIVE_SUFFIX), _cdcsdv _sdv),)
+ifeq ($(filter $(TARGET_BOARD_DERIVATIVE_SUFFIX), _cdcsdv),)
 PRODUCT_PACKAGES += update_engine 
 endif
 
@@ -510,9 +511,7 @@ PRODUCT_COPY_FILES += \
 endif
 
 ifneq ($(TARGET_BOARD_DERIVATIVE_SUFFIX),_qmaa)
-ifneq ($(TARGET_SDV_ENABLED), true)
   DEVICE_MANIFEST_FILE := device/qcom/gen4_gvm/manifest.xml
-endif #TARGET_SDV_ENABLED
 endif
 DEVICE_MATRIX_FILE   := device/qcom/common/compatibility_matrix.xml
 DEVICE_FRAMEWORK_MANIFEST_FILE := device/qcom/gen4_gvm/framework_manifest.xml
@@ -558,7 +557,7 @@ PRODUCT_FULL_TREBLE_OVERRIDE := true
 PRODUCT_VENDOR_MOVE_ENABLED := true
 PRODUCT_COMPATIBLE_PROPERTY_OVERRIDE := true
 
-ifeq ($(filter $(TARGET_BOARD_DERIVATIVE_SUFFIX), _cdcsdv _sdv),)
+ifeq ($(filter $(TARGET_BOARD_DERIVATIVE_SUFFIX), _cdcsdv),)
 DEVICE_PACKAGE_OVERLAYS += device/qcom/gen4_gvm/overlay
 endif
 
@@ -787,9 +786,6 @@ PRODUCT_VENDOR_PROPERTIES += audio.offload.gapless.enabled=true
 
 # initialize QCA1530 detection
 PRODUCT_VENDOR_PROPERTIES += sys.qca1530=detect
-
-# Enable stm events
-PRODUCT_VENDOR_PROPERTIES += persist.debug.coresight.config=stm-events
 
 # hwui properties
 PRODUCT_VENDOR_PROPERTIES += ro.hwui.texture_cache_size=72 \
