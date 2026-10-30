@@ -470,8 +470,8 @@ PRODUCT_HOST_PACKAGES += \
 PRODUCT_PACKAGES += \
     libhealthd.msm
 
-# MTMD enablement, for cmu lunch separate the display and input port xml
-ifeq (,$(filter gen4_gvm_cmu, $(TARGET_BOARD_PLATFORM)$(TARGET_BOARD_SUFFIX)$(TARGET_BOARD_DERIVATIVE_SUFFIX)))
+# MUMD enablement for gen4 lunches. Differentiated the display and input port xml using filter for gen4_gvm_gy and genv_gvm_cmu lunches.
+ifeq (,$(filter gen4_gvm_cmu gen4_gvm_gy, $(TARGET_BOARD_PLATFORM)$(TARGET_BOARD_SUFFIX)$(TARGET_BOARD_DERIVATIVE_SUFFIX)))
 PRODUCT_COPY_FILES += \
     device/qcom/gen4_gvm/input-port-associations.xml:$(TARGET_COPY_OUT_VENDOR)/etc/input-port-associations.xml \
     device/qcom/gen4_gvm/display_settings.xml:$(TARGET_COPY_OUT_VENDOR)/etc/display_settings.xml
